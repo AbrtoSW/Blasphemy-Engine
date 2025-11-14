@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="Blasphemy Engine/Blasphemy Engine.vcxproj" Id="8a3b637c-f821-4560-9b88-59f4f499a2f2" />
+</Solution>
