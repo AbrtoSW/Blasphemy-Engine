@@ -1,8 +1,20 @@
 #include <iostream>
+#include "platform.h"
+#include "vulkan_engine.h"
 
 int main() {
 
-	std::cout << "hello world";
+	Platform platform;
+	if (!platform.init()) {
+		return -1;
+	}
+
+	VulkanEngine engine(platform);
+	engine.init();
+	//engine.run();
+	//engine.cleanup();
+	
+	platform.shutdown();
 
 	return 0;
 }

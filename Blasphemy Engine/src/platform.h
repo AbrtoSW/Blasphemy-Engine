@@ -7,7 +7,7 @@ class Platform {
 	
 public:
 
-	void init();
+	bool init();
 	void shutdown();
 
 	void pollEvents();
@@ -19,7 +19,7 @@ public:
 	float getScale() const;
 
 	VkSurfaceKHR createVulkanSurface(VkInstance, VkAllocationCallbacks* allocator);
-	const std::filesystem::path& getAssetsRoot() const;
+	//const std::filesystem::path& getAssetsRoot() const;
 
 private:
 	SDL_Window* window = nullptr;

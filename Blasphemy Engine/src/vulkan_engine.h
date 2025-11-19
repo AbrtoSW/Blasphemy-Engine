@@ -1,13 +1,22 @@
 #pragma once
 
+class Platform;
+
 class VulkanEngine {
 
 public:
 
-	void init();
-	void run();
-	void cleanup();
+	VulkanEngine(Platform& platform) 
+		: platform(platform) {}
 
 	void init();
+	//void run();
+	//void cleanup();
+
+private:
+
+	Platform& platform;
+
+	bool isInitalized = { false };
 
 };
