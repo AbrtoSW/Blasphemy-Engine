@@ -1,6 +1,6 @@
 #include <iostream>
 #include "platform.h"
-#include "vulkan_engine.h"
+#include "vk_engine.h"
 
 int main() {
 
@@ -11,7 +11,7 @@ int main() {
 
 	VulkanEngine engine(platform);
 	engine.init();
-	//engine.run();
+	engine.run();
 	//engine.cleanup();
 	
 	platform.shutdown();

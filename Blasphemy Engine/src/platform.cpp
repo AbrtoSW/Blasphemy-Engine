@@ -11,10 +11,8 @@ bool Platform::init() {
 
 
 	SDL_WindowFlags flags = (SDL_WindowFlags)(SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE);
-	window = SDL_CreateWindow("GROTESK",
-		(int)(windowExtent.width * mainScale),
-		(int)(windowExtent.height * mainScale),
-		flags);
+
+	window = SDL_CreateWindow("BLASPHEMY", (int)(windowExtent.width * mainScale), (int)(windowExtent.height * mainScale), flags);
 
 	if (!window) {
 		printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
