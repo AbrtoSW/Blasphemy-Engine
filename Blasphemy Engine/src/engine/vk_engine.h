@@ -1,7 +1,9 @@
 #pragma once
 
+#define VK_NO_PROTOTYPES
 #include <vma/vk_mem_alloc.h>
 #include <chrono>
+#include "volk/volk.h"
 #include "engine/vk_frame_data.h"
 
 class Platform;
@@ -12,6 +14,18 @@ using TimePoint = std::chrono::time_point<Clock>;
 struct GpuCapabilities {
 	bool supportsSync2;
 	uint32_t apiVersion = 0;
+};
+
+struct EnabledFeatures {
+	bool vulkan11_shaderDrawParameters = false;
+	bool vulkan12_bufferDeviceAddress = false;
+	bool vulkan12_descriptorIndexing = false;
+	bool vulkan12_drawIndirectCount = false;
+	bool vulkan12_scalarBlockLayout = false;
+	bool vulkan13_synchronization2 = false;
+
+	bool core_samplerAnisotropy = false;
+	bool core_fillModeNonSolid = false;
 };
 
 class VulkanEngine {
@@ -42,6 +56,11 @@ private:
 	VkQueue graphicsQueue = VK_NULL_HANDLE;
 	uint32_t graphicsQueueFamily = 0;
 
+	EnabledFeatures enabledFeatures = {};
+
+	uint32_t requestedMajor = 1;
+	uint32_t requestedMinor = 1;
+
 	TimePoint lastTime = {};
 	TimePoint currentTime = {};
 	float deltaTime = 0.0f;
@@ -59,6 +78,14 @@ private:
 
 	void update_timing();
 
-
+	bool createSurface();
+	bool pickPhysicalDevice();
+	bool checkDeviceExtensionSupport(VkPhysicalDevice device);
+	bool findQueueFamilies(VkPhysicalDevice device);
+	bool queryFeatures(VkPhysicalDevice device);
+	bool createLogicalDevice();
+	bool queryDriverVersion();
+	void determineRequestedVulkanVersion();
+	void printEnabledFeatures();
 
 };

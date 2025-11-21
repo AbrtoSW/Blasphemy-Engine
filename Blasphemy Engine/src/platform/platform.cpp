@@ -38,13 +38,31 @@ void Platform::shutdown() {
 
 void Platform::pollEvents() {
 	SDL_Event e;
+
 	while (SDL_PollEvent(&e)) {
-		if (e.type == SDL_EVENT_QUIT) {
+
+		switch (e.type) {
+
+		case SDL_EVENT_QUIT:
 			quit = true;
-		}
-		if (e.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) {
+			break;
+
+		case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
 			windowExtent.width = e.window.data1;
 			windowExtent.height = e.window.data2;
+			break;
+
+		case SDL_EVENT_KEY_DOWN:
+				switch (e.key.key) {
+					case SDLK_ESCAPE:
+						quit = true;
+						break;
+				}
+			break;
+			
+
+		default:
+			break;
 		}
 	}
 }

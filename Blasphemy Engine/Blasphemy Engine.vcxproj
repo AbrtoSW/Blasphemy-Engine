@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -105,7 +105,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;$(VULKAN_SDK)\Include;$(SolutionDir)dir\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Alberto\source\repos\Blasphemy Engine\dir\external;$(ProjectDir)src;$(SolutionDir)dir\include\;$(VULKAN_SDK)\Include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -130,12 +130,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\dir\external\volk\volk.c" />
+    <ClCompile Include="src\engine\vk_engine_logic_device.cpp" />
+    <ClCompile Include="src\engine\vk_engine_physical_device.cpp" />
+    <ClCompile Include="src\engine\vk_engine_surface.cpp" />
+    <ClCompile Include="src\engine\vk_engine_instance_builder.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\platform\platform.cpp" />
     <ClCompile Include="src\engine\vk_engine.cpp" />
     <ClCompile Include="src\util\vk_util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\engine\vk_engine_instance_builder.h" />
     <ClInclude Include="src\platform\platform.h" />
     <ClInclude Include="src\engine\vk_frame_data.h" />
     <ClInclude Include="src\engine\vk_engine.h" />
