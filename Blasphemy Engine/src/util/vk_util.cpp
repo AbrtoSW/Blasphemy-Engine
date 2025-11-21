@@ -1,4 +1,4 @@
-#include "vk_util.h"
+#include "util/vk_util.h"
 
 void DeletionQueue::push_deletion_lambda(std::function<void()>&& function) {
 	deletors.push_back(function);

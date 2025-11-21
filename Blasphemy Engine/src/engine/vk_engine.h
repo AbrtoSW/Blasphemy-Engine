@@ -2,7 +2,7 @@
 
 #include <vma/vk_mem_alloc.h>
 #include <chrono>
-#include "vk_frame_data.h"
+#include "engine/vk_frame_data.h"
 
 class Platform;
 
@@ -31,6 +31,7 @@ private:
 
 	bool isInitalized = { false };
 	bool stopRendering = { false };
+	bool useValidationLayers = true;
 
 	VmaAllocator vmaAllocator = VK_NULL_HANDLE;
 	VkInstance instance = VK_NULL_HANDLE;
@@ -46,7 +47,7 @@ private:
 	float deltaTime = 0.0f;
 
 	std::vector<const char*> extensions;
-	GpuCapabilities gpuCaps{};
+	GpuCapabilities gpuCapability{};
 
 	int frameNumber;
 	FrameData frames[FRAME_OVERLAP];

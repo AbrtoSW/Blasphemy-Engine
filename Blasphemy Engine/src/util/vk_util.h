@@ -7,7 +7,7 @@
 #include <vulkan/vulkan.h>
 #include <vma/vk_mem_alloc.h>
 
-#include "vk_types.h"
+#include "types/vk_types.h"
 
 struct DeletionQueue {
 

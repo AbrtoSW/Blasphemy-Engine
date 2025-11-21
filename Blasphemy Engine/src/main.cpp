@@ -1,11 +1,12 @@
 #include <iostream>
-#include "platform.h"
-#include "vk_engine.h"
+#include "platform/platform.h"
+#include "engine/vk_engine.h"
 
 int main() {
 
 	Platform platform;
 	if (!platform.init()) {
+		std::cout << "Platform init failed.\n";
 		return -1;
 	}
 

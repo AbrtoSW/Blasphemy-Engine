@@ -18,30 +18,30 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\vk_engine.cpp">
+    <ClCompile Include="src\engine\vk_engine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\platform.cpp">
+    <ClCompile Include="src\platform\platform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\vk_util.cpp">
+    <ClCompile Include="src\util\vk_util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\vk_engine.h">
+    <ClInclude Include="src\engine\vk_engine.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\platform.h">
+    <ClInclude Include="src\platform\platform.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\vk_frame_data.h">
+    <ClInclude Include="src\engine\vk_frame_data.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\vk_util.h">
+    <ClInclude Include="src\util\vk_util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\vk_types.h">
+    <ClInclude Include="src\types\vk_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

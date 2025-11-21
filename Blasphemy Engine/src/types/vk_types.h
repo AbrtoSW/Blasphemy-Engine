@@ -1,7 +1,7 @@
+#pragma once
+
 #include <vulkan/vulkan.h>
 #include <vma/vk_mem_alloc.h>
-
-
 
 struct AllocatedImage {
 	VkImage image = VK_NULL_HANDLE;

@@ -19,7 +19,8 @@ public:
 	float getScale() const;
 
 	VkSurfaceKHR createVulkanSurface(VkInstance, VkAllocationCallbacks* allocator);
-	//const std::filesystem::path& getAssetsRoot() const;
+	void getRequiredVulkanExtensions(std::vector<const char*>& outExtensions) const;
+	const std::filesystem::path& getAssetsRoot() const;
 
 private:
 	SDL_Window* window = nullptr;

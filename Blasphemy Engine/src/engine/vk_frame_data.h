@@ -1,8 +1,8 @@
 #pragma once
 #include <vulkan/vulkan.h>
 #include <memory>
-
-#include "vk_util.h"
+#include "types/vk_types.h"
+#include "util/vk_util.h"
 
 struct FrameData {
 

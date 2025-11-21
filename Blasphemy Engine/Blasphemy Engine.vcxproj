@@ -105,7 +105,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;$(SolutionDir)dir\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(VULKAN_SDK)\Include;$(SolutionDir)dir\include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -131,16 +131,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\platform.cpp" />
-    <ClCompile Include="src\vk_engine.cpp" />
-    <ClCompile Include="src\vk_util.cpp" />
+    <ClCompile Include="src\platform\platform.cpp" />
+    <ClCompile Include="src\engine\vk_engine.cpp" />
+    <ClCompile Include="src\util\vk_util.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\platform.h" />
-    <ClInclude Include="src\vk_frame_data.h" />
-    <ClInclude Include="src\vk_engine.h" />
-    <ClInclude Include="src\vk_types.h" />
-    <ClInclude Include="src\vk_util.h" />
+    <ClInclude Include="src\platform\platform.h" />
+    <ClInclude Include="src\engine\vk_frame_data.h" />
+    <ClInclude Include="src\engine\vk_engine.h" />
+    <ClInclude Include="src\types\vk_types.h" />
+    <ClInclude Include="src\util\vk_util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

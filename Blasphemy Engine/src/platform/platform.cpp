@@ -1,4 +1,4 @@
-#include "platform.h"
+#include "platform/platform.h"
 #include <SDL3/SDL_vulkan.h>
 
 bool Platform::init() {
@@ -75,3 +75,14 @@ VkSurfaceKHR Platform::createVulkanSurface(VkInstance instance, VkAllocationCall
 	return vkSurface;
 }
 
+void Platform::getRequiredVulkanExtensions(std::vector<const char*>& outExtensions) const {
+	uint32_t count = 0;
+	const char* const* exts = SDL_Vulkan_GetInstanceExtensions(&count);
+	for (uint32_t i = 0; i < count; ++i) {
+		outExtensions.push_back(exts[i]);
+	}
+}
+
+const std::filesystem::path& Platform::getAssetsRoot() const {
+	return assetsRoot;
+}
