@@ -6,7 +6,6 @@
 #include "engine/vk_engine_instance_builder.h"
 
 //External Files
-#include <vkbootstrap/VkBootstrap.h>
 #include <iostream>
 
 void VulkanEngine::init() {
@@ -88,7 +87,6 @@ bool VulkanEngine::init_vulkan() {
 	printEnabledFeatures();
 
 	initSwapchain();
-
 	
 	return true;
 }

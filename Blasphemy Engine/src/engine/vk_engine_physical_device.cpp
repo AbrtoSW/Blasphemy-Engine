@@ -66,7 +66,7 @@ bool VulkanEngine::findQueueFamilies(VkPhysicalDevice device) {
 	std::vector<VkQueueFamilyProperties> props(queueCount);
 	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueCount, props.data());
 
-	for (int i = 0; i < queueCount; i++) {
+	for (uint32_t i = 0; i < queueCount; i++) {
 		bool graphics = props[i].queueFlags & VK_QUEUE_GRAPHICS_BIT;
 
 		VkBool32 presentSupported = VK_FALSE;
