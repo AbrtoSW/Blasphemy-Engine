@@ -119,5 +119,11 @@ bool VulkanInstanceBuilder::createDebugMessenger(VkInstance& instance, VkDebugUt
 
 	if (!func) return false;
 
-	return func(instance, &info, nullptr, &debugMessenger) == VK_SUCCESS;
+	VkResult r = func(instance, &info, nullptr, &debugMessenger);
+	if (r == VK_SUCCESS) {
+		std::cout << "Vulkan Debug: ENABLED\n";
+		return true;
+	}
+
+	return false;
 }

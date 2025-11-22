@@ -4,7 +4,8 @@
 #include <vma/vk_mem_alloc.h>
 #include <chrono>
 #include "volk/volk.h"
-#include "engine/vk_frame_data.h"
+#include "engine/vk_frame_manager.h"
+#include "engine/vk_swapchain.h"
 
 class Platform;
 
@@ -56,6 +57,8 @@ private:
 	VkQueue graphicsQueue = VK_NULL_HANDLE;
 	uint32_t graphicsQueueFamily = 0;
 
+	VulkanSwapchain swapchain;
+
 	EnabledFeatures enabledFeatures = {};
 
 	uint32_t requestedMajor = 1;
@@ -78,6 +81,7 @@ private:
 
 	void update_timing();
 
+	void initSwapchain();
 	bool createSurface();
 	bool pickPhysicalDevice();
 	bool checkDeviceExtensionSupport(VkPhysicalDevice device);

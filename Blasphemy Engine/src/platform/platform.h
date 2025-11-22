@@ -22,9 +22,11 @@ public:
 	void getRequiredVulkanExtensions(std::vector<const char*>& outExtensions) const;
 	const std::filesystem::path& getAssetsRoot() const;
 
+
 private:
 	SDL_Window* window = nullptr;
-	VkExtent2D windowExtent = { 1700,900 };
+	VkExtent2D windowExtent = { 1920,1080 };
+
 	float mainScale = 1.0f;
 
 	bool windowResizeRequest = false;

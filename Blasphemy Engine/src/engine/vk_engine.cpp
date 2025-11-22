@@ -9,8 +9,6 @@
 #include <vkbootstrap/VkBootstrap.h>
 #include <iostream>
 
-
-
 void VulkanEngine::init() {
 	if (isInitalized) {
 		std::cout << "Engine init() called twice.\n";
@@ -84,10 +82,12 @@ bool VulkanEngine::init_vulkan() {
 	// 6. logical device
 	if (!createLogicalDevice())
 		return false;
+
 	volkLoadDevice(device);
 
 	printEnabledFeatures();
 
+	initSwapchain();
 
 	
 	return true;
@@ -142,8 +142,6 @@ void VulkanEngine::determineRequestedVulkanVersion() {
 		<< requestedMajor << "." << requestedMinor << "\n";
 }
 
-
-
 bool VulkanEngine::init_commands() {
 	std::cout << "[Engine] init_commands() skeleton.\n";
 	// TODO: create command pools / buffers (immediate + per-frame)
@@ -162,6 +160,14 @@ void VulkanEngine::update_timing() {
 	deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
 	lastTime = currentTime;
 }
+
+void VulkanEngine::initSwapchain() {
+	VkExtent2D e = platform.getWindowExtent();
+	swapchain.create(physicalDevice, device, surface, e.width, e.height);
+
+	//renderer->framebuffer_image_resources
+}
+
 
 
 void VulkanEngine::printEnabledFeatures() {

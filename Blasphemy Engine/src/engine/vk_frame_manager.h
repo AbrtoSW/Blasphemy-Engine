@@ -8,7 +8,6 @@
 #include "util/vk_util.h"
 
 struct FrameData {
-
 	int currentFrame;
 	VkCommandPool commandPool;
 	VkCommandBuffer mainCommandBuffer;
@@ -22,4 +21,19 @@ struct FrameData {
 	void* cameraUBOMapped = nullptr;
 };
 
-constexpr unsigned int FRAME_OVERLAP = 3;
+constexpr unsigned int FRAME_OVERLAP = 2;
+
+class FrameManager {
+public:
+	FrameManager(uint32_t frameCount);
+
+	FrameData& currentFrame();
+	FrameData& getFrame(uint32_t index);
+
+	uint32_t getCurrentIndex() const;
+	void advance();
+
+private:
+	std::vector<FrameData> frames;
+	uint32_t currentIndex;
+};
