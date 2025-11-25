@@ -1,14 +1,14 @@
 #define VMA_IMPLEMENTATION
 //Internal Solutions files
 
-#include "engine/vk_engine.h"
+#include "vulkan_backend/vk_backend.h"
 #include "platform/platform.h"
-#include "engine/vk_engine_instance_builder.h"
+#include "vulkan_backend/vk_backend_instance_builder.h"
 
 //External Files
 #include <iostream>
 
-void VulkanEngine::init() {
+void VulkanBackend::init() {
 	if (isInitalized) {
 		std::cout << "Engine init() called twice.\n";
 		return;
@@ -23,7 +23,7 @@ void VulkanEngine::init() {
 	isInitalized = true;
 }
 
-void VulkanEngine::run() {
+void VulkanBackend::run() {
 	if (!isInitalized) {
 		std::cout << "Engine run() called before init().\n";
 		return;
@@ -51,7 +51,7 @@ void VulkanEngine::run() {
 }
 
 
-bool VulkanEngine::init_vulkan() {
+bool VulkanBackend::init_vulkan() {
 
 	volkInitialize();
 
@@ -91,7 +91,7 @@ bool VulkanEngine::init_vulkan() {
 	return true;
 }
 
-bool VulkanEngine::queryDriverVersion() {
+bool VulkanBackend::queryDriverVersion() {
 
 	uint32_t systemVersion = 0;
 
@@ -115,7 +115,7 @@ bool VulkanEngine::queryDriverVersion() {
 	return true;
 }
 
-void VulkanEngine::determineRequestedVulkanVersion() {
+void VulkanBackend::determineRequestedVulkanVersion() {
 
 	uint32_t sysMajor = VK_VERSION_MAJOR(gpuCapability.apiVersion);
 	uint32_t sysMinor = VK_VERSION_MINOR(gpuCapability.apiVersion);
@@ -140,26 +140,26 @@ void VulkanEngine::determineRequestedVulkanVersion() {
 		<< requestedMajor << "." << requestedMinor << "\n";
 }
 
-bool VulkanEngine::init_commands() {
+bool VulkanBackend::init_commands() {
 	std::cout << "[Engine] init_commands() skeleton.\n";
 	// TODO: create command pools / buffers (immediate + per-frame)
 	return true;
 }
 
-bool VulkanEngine::init_sync_structures() {
+bool VulkanBackend::init_sync_structures() {
 	std::cout << "[Engine] init_sync_structures() skeleton.\n";
 	// TODO: create fences/semaphores for frames[FRAME_OVERLAP]
 	return true;
 }
 
 
-void VulkanEngine::update_timing() {
+void VulkanBackend::update_timing() {
 	currentTime = Clock::now();
 	deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
 	lastTime = currentTime;
 }
 
-void VulkanEngine::initSwapchain() {
+void VulkanBackend::initSwapchain() {
 	VkExtent2D e = platform.getWindowExtent();
 	swapchain.create(physicalDevice, device, surface, e.width, e.height);
 
@@ -168,7 +168,7 @@ void VulkanEngine::initSwapchain() {
 
 
 
-void VulkanEngine::printEnabledFeatures() {
+void VulkanBackend::printEnabledFeatures() {
 	std::cout << "\n=== GPU FEATURE REPORT ===\n";
 
 	std::cout << "Core Sampler Anisotropy       : "

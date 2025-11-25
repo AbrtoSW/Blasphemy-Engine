@@ -1,21 +1,12 @@
 #include <iostream>
-#include "platform/platform.h"
-#include "engine/vk_engine.h"
+#include "engine/BlasphemyEngine.h"
 
 int main() {
-
-	Platform platform;
-	if (!platform.init()) {
-		std::cout << "Platform init failed.\n";
-		return -1;
-	}
-
-	VulkanEngine engine(platform);
+	
+	BlasphemyEngine engine;
 	engine.init();
 	engine.run();
-	//engine.cleanup();
-	
-	platform.shutdown();
+	engine.shutdown();
 
 	return 0;
 }

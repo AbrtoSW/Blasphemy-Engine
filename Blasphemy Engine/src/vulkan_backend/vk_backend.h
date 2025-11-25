@@ -4,8 +4,8 @@
 #include <vma/vk_mem_alloc.h>
 #include <chrono>
 #include "volk/volk.h"
-#include "engine/vk_frame_manager.h"
-#include "engine/vk_swapchain.h"
+#include "vulkan_backend/vk_frame_manager.h"
+#include "vulkan_backend/vk_swapchain.h"
 
 class Platform;
 
@@ -29,11 +29,11 @@ struct EnabledFeatures {
 	bool core_fillModeNonSolid = false;
 };
 
-class VulkanEngine {
+class VulkanBackend {
 
 public:
 
-	VulkanEngine(Platform& platform) 
+	VulkanBackend(Platform& platform) 
 		: platform(platform) {}
 
 	void init();

@@ -1,7 +1,7 @@
-#include "engine/vk_engine.h"
+#include "vulkan_backend/vk_backend.h"
 #include <iostream>
 
-bool VulkanEngine::pickPhysicalDevice() {
+bool VulkanBackend::pickPhysicalDevice() {
 
 	uint32_t deviceCount = 0;
 	vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
@@ -30,7 +30,7 @@ bool VulkanEngine::pickPhysicalDevice() {
 	return false;
 }
 
-bool VulkanEngine::checkDeviceExtensionSupport(VkPhysicalDevice dev) {
+bool VulkanBackend::checkDeviceExtensionSupport(VkPhysicalDevice dev) {
 
 	uint32_t extCount = 0;
 	vkEnumerateDeviceExtensionProperties(dev, nullptr, &extCount, nullptr);
@@ -58,7 +58,7 @@ bool VulkanEngine::checkDeviceExtensionSupport(VkPhysicalDevice dev) {
 }
 
 
-bool VulkanEngine::findQueueFamilies(VkPhysicalDevice device) {
+bool VulkanBackend::findQueueFamilies(VkPhysicalDevice device) {
 
 	uint32_t queueCount = 0;
 	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueCount, nullptr);
@@ -81,7 +81,7 @@ bool VulkanEngine::findQueueFamilies(VkPhysicalDevice device) {
 	return false;
 }
 
-bool VulkanEngine::queryFeatures(VkPhysicalDevice device) {
+bool VulkanBackend::queryFeatures(VkPhysicalDevice device) {
 	// core
 	VkPhysicalDeviceFeatures core{};
 	vkGetPhysicalDeviceFeatures(device, &core);

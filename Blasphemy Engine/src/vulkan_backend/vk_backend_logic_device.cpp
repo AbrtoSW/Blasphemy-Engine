@@ -1,7 +1,7 @@
-#include "engine/vk_engine.h"
+#include "vulkan_backend/vk_backend.h"
 #include <iostream>
 
-bool VulkanEngine::createLogicalDevice() {
+bool VulkanBackend::createLogicalDevice() {
 	
 	float queuePriority = 1.0f;
 	VkDeviceQueueCreateInfo queueInfo = {};

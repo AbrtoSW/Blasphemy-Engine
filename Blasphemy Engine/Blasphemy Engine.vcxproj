@@ -131,23 +131,25 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\dir\external\volk\volk.c" />
-    <ClCompile Include="src\engine\vk_engine_logic_device.cpp" />
-    <ClCompile Include="src\engine\vk_engine_physical_device.cpp" />
-    <ClCompile Include="src\engine\vk_engine_surface.cpp" />
-    <ClCompile Include="src\engine\vk_engine_instance_builder.cpp" />
-    <ClCompile Include="src\engine\vk_frame_manager.cpp" />
-    <ClCompile Include="src\engine\vk_swapchain.cpp" />
+    <ClCompile Include="src\engine\BlasphemyEngine.cpp" />
+    <ClCompile Include="src\vulkan_backend\vk_backend.cpp" />
+    <ClCompile Include="src\vulkan_backend\vk_backend_instance_builder.cpp" />
+    <ClCompile Include="src\vulkan_backend\vk_backend_logic_device.cpp" />
+    <ClCompile Include="src\vulkan_backend\vk_backend_physical_device.cpp" />
+    <ClCompile Include="src\vulkan_backend\vk_backend_surface.cpp" />
+    <ClCompile Include="src\vulkan_backend\vk_frame_manager.cpp" />
+    <ClCompile Include="src\vulkan_backend\vk_swapchain.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\platform\platform.cpp" />
-    <ClCompile Include="src\engine\vk_engine.cpp" />
     <ClCompile Include="src\util\vk_util.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\engine\vk_engine_instance_builder.h" />
-    <ClInclude Include="src\engine\vk_swapchain.h" />
+    <ClInclude Include="src\engine\BlasphemyEngine.h" />
+    <ClInclude Include="src\vulkan_backend\vk_backend.h" />
+    <ClInclude Include="src\vulkan_backend\vk_backend_instance_builder.h" />
+    <ClInclude Include="src\vulkan_backend\vk_frame_manager.h" />
+    <ClInclude Include="src\vulkan_backend\vk_swapchain.h" />
     <ClInclude Include="src\platform\platform.h" />
-    <ClInclude Include="src\engine\vk_frame_manager.h" />
-    <ClInclude Include="src\engine\vk_engine.h" />
     <ClInclude Include="src\types\vk_types.h" />
     <ClInclude Include="src\util\vk_init.h" />
     <ClInclude Include="src\util\vk_util.h" />
