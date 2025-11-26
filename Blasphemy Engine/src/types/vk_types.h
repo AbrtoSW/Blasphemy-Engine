@@ -17,3 +17,4 @@ struct AllocatedBuffer {
 	VmaAllocationInfo info = {};
 	VkDeviceSize sizeBytes = 0;
 };
+

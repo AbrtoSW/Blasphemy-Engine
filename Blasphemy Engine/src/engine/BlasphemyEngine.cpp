@@ -11,7 +11,7 @@
 
 void BlasphemyEngine::init() {
 
-	type_out("Blasphemy Engine" , 30);
+	type_out("Initiating Blasphemy Engine" , 30);
 
 	if (!platform.init())
 		return;

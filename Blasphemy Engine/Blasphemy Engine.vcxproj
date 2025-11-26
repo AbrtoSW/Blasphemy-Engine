@@ -106,6 +106,8 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>C:\Users\Alberto\source\repos\Blasphemy Engine\dir\external;$(ProjectDir)src;$(SolutionDir)dir\include\;$(VULKAN_SDK)\Include</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>
+      </DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -131,7 +133,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\dir\external\volk\volk.c" />
+    <ClCompile Include="src\initVMA\initVMA.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="src\engine\BlasphemyEngine.cpp" />
+    <ClCompile Include="src\util\vk_helper.cpp" />
     <ClCompile Include="src\vulkan_backend\vk_backend.cpp" />
     <ClCompile Include="src\vulkan_backend\vk_backend_instance_builder.cpp" />
     <ClCompile Include="src\vulkan_backend\vk_backend_logic_device.cpp" />
@@ -151,7 +157,7 @@
     <ClInclude Include="src\vulkan_backend\vk_swapchain.h" />
     <ClInclude Include="src\platform\platform.h" />
     <ClInclude Include="src\types\vk_types.h" />
-    <ClInclude Include="src\util\vk_init.h" />
+    <ClInclude Include="src\util\vk_helper.h" />
     <ClInclude Include="src\util\vk_util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

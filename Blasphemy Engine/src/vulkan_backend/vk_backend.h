@@ -8,6 +8,7 @@
 #include "vulkan_backend/vk_swapchain.h"
 
 class Platform;
+class FrameManager;
 
 using Clock = std::chrono::high_resolution_clock;
 using TimePoint = std::chrono::time_point<Clock>;
@@ -17,7 +18,7 @@ struct GpuCapabilities {
 	uint32_t apiVersion = 0;
 };
 
-struct EnabledFeatures {
+struct AvailableDeviceFeatures {
 	bool vulkan11_shaderDrawParameters = false;
 	bool vulkan12_bufferDeviceAddress = false;
 	bool vulkan12_descriptorIndexing = false;
@@ -29,12 +30,17 @@ struct EnabledFeatures {
 	bool core_fillModeNonSolid = false;
 };
 
+enum struct RendererMode {
+	Modern,
+	Legacy
+};
+
 class VulkanBackend {
 
 public:
 
 	VulkanBackend(Platform& platform) 
-		: platform(platform) {}
+		: platform(platform), frameManager(FRAME_OVERLAP) {}
 
 	void init();
 	void run();
@@ -59,7 +65,7 @@ private:
 
 	VulkanSwapchain swapchain;
 
-	EnabledFeatures enabledFeatures = {};
+	AvailableDeviceFeatures enabledFeatures = {};
 
 	uint32_t requestedMajor = 1;
 	uint32_t requestedMinor = 1;
@@ -71,14 +77,21 @@ private:
 	std::vector<const char*> extensions;
 	GpuCapabilities gpuCapability{};
 
-	int frameNumber;
-	FrameData frames[FRAME_OVERLAP];
-	FrameData& get_current_frame() { return frames[frameNumber % FRAME_OVERLAP]; }
+	VkFence immediateFence;
+	VkCommandBuffer immediateCommandBuffer;
+	VkCommandPool immediateCommandPool;
+
+
+	FrameManager frameManager;
+	RendererMode rendererMode;
+
+
 
 	bool init_vulkan();
-	bool init_commands();
-	bool init_sync_structures();
+	bool init_command_pools();
+	bool init_frame_sync_objects();
 
+	bool createVMAAllocator();
 	void update_timing();
 
 	void initSwapchain();
@@ -89,7 +102,6 @@ private:
 	bool queryFeatures(VkPhysicalDevice device);
 	bool createLogicalDevice();
 	bool queryDriverVersion();
-	void determineRequestedVulkanVersion();
 	void printEnabledFeatures();
 
 };

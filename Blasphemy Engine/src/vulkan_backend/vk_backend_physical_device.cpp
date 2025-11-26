@@ -107,35 +107,31 @@ bool VulkanBackend::queryFeatures(VkPhysicalDevice device) {
 
 	vkGetPhysicalDeviceFeatures2(device, &features2);
 
-	//Check requested version feature requirements
-	if (requestedMajor == 1 && requestedMinor >= 3) {
-		if (!f13.synchronization2) return false;
-		if (!f12.descriptorIndexing) return false;
-		if (!f12.bufferDeviceAddress) return false;
-		if (!f12.drawIndirectCount) return false;
-		if (!f11.shaderDrawParameters) return false;
-	}
-	else if (requestedMajor == 1 && requestedMinor == 2) {
-		if (!f12.descriptorIndexing) return false;
-		if (!f12.bufferDeviceAddress) return false;
-		if (!f12.drawIndirectCount) return false;
-		if (!f11.shaderDrawParameters) return false;
-	}
-	else if (requestedMajor == 1 && requestedMinor == 1) {
-		if (!f11.shaderDrawParameters) return false;
-	}
+	bool hasDrawParams = f11.shaderDrawParameters == VK_TRUE;
+	bool hasIndexing = f12.descriptorIndexing == VK_TRUE;
+	bool hasBDA = f12.bufferDeviceAddress == VK_TRUE;
+	bool hasDICount = f12.drawIndirectCount == VK_TRUE;
+	bool hasSync2 = f13.synchronization2 == VK_TRUE;
+
+	if (!hasDrawParams)
+		return false;
+
+	if (hasIndexing && hasBDA && hasDICount && hasSync2)
+		rendererMode = RendererMode::Modern;
+	else
+		rendererMode = RendererMode::Legacy;
 
 	// store sync2 support
-	gpuCapability.supportsSync2 = (f13.synchronization2 == VK_TRUE);
+	gpuCapability.supportsSync2 = hasSync2;
 
-	enabledFeatures.vulkan11_shaderDrawParameters = f11.shaderDrawParameters;
+	enabledFeatures.vulkan11_shaderDrawParameters = hasDrawParams;
 
-	enabledFeatures.vulkan12_bufferDeviceAddress = f12.bufferDeviceAddress;
-	enabledFeatures.vulkan12_descriptorIndexing = f12.descriptorIndexing;
-	enabledFeatures.vulkan12_drawIndirectCount = f12.drawIndirectCount;
-	enabledFeatures.vulkan12_scalarBlockLayout = f12.scalarBlockLayout;
+	enabledFeatures.vulkan12_bufferDeviceAddress = hasBDA;
+	enabledFeatures.vulkan12_descriptorIndexing = hasIndexing;
+	enabledFeatures.vulkan12_drawIndirectCount = hasDICount;
+	enabledFeatures.vulkan12_scalarBlockLayout = (f12.scalarBlockLayout == VK_TRUE);
 
-	enabledFeatures.vulkan13_synchronization2 = f13.synchronization2;
+	enabledFeatures.vulkan13_synchronization2 = hasSync2;
 
 	return true;
 }

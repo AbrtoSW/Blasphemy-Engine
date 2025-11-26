@@ -7,67 +7,91 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityF
 	return VK_FALSE;
 }
 
-bool VulkanInstanceBuilder::create(bool enableValidation, VkInstance& instance, VkDebugUtilsMessengerEXT& debugMessenger) {
-	validation = enableValidation;
-	if (!createInstance(instance)) return false;
-	if (validation && !createDebugMessenger(instance, debugMessenger)) return false;
-	return true;
+void VulkanInstanceBuilder::filterLayers(std::vector<const char*>& layers) {
+
+	uint32_t count = 0;
+	vkEnumerateInstanceLayerProperties(&count, nullptr);
+
+	std::vector<VkLayerProperties> props(count);
+	vkEnumerateInstanceLayerProperties(&count, props.data());
+
+	std::vector<const char*> filtered;
+
+	for (const char* name : layers) {
+		for (auto& p : props) {
+			if (strcmp(name, p.layerName) == 0) {
+				filtered.push_back(name);
+				break;
+			}
+		}
+	}
+	
+	layers = filtered;
 }
 
-bool VulkanInstanceBuilder::createInstance(VkInstance& instance) {
+void VulkanInstanceBuilder::warnImplicitLayers() {
+	uint32_t count = 0;
+	vkEnumerateInstanceLayerProperties(&count, nullptr);
+	std::vector<VkLayerProperties> props(count);
+	vkEnumerateInstanceLayerProperties(&count, props.data());
 
-	uint32_t systemVersion = 0;
-
-	if (vkEnumerateInstanceVersion(&systemVersion) != VK_SUCCESS) {
-		std::cout << "vkEnumerateInstanceVersion failed\n";
-		return false;
+	for (auto& p : props) {
+		if (strstr(p.layerName, "OW_OVERLAY") ||
+			strstr(p.layerName, "OW_OBS_HOOK") ||
+			strstr(p.layerName, "OBS") ||
+			strstr(p.layerName, "overlay"))
+		{
+			std::cout << "[Warning] Implicit Vulkan overlay layer detected: "
+				<< p.layerName << "\n"
+				<< "This layer may cause stability issues.\n";
+		}
 	}
+}
 
-	uint32_t systemMajor = VK_VERSION_MAJOR(systemVersion);
-	uint32_t systemMinor = VK_VERSION_MINOR(systemVersion);
+InstanceBuildResult VulkanInstanceBuilder::create(bool enableValidation, VkInstance& instance, VkDebugUtilsMessengerEXT& debugMessenger) {
 
-	if (systemMajor < 1 || (systemMajor == 1 && systemMinor < 1)) {
-		std::cout << "Minimum supported Vulkan version is 1.1, driver reports " << systemMajor << "." << systemMinor << "\n";
-		return false;
-	}
+	InstanceBuildResult r{};
+	r.success = false;
+
+	validation = enableValidation;
 
 	uint32_t reqMajor = 1;
 	uint32_t reqMinor = 1;
 
-	if (systemMinor >= 3) {
-		reqMinor = 3;
-	} else if (systemMinor >= 2) {
-		reqMinor = 2;
-	} else {
-		reqMinor = 1;
-	}
+	if (!createInstance(instance, reqMajor, reqMinor))
+		return r;
 
-	std::cout << "Requesting Vulkan " << reqMajor << "." << reqMinor << "\n";
+	if (validation && !createDebugMessenger(instance, debugMessenger))
+		return r;
 
-	//any extensions required from SDL
+	r.success = true;
+	r.apiMajor = reqMajor;
+	r.apiMinor = reqMinor;
+
+	return r;
+}
+
+bool VulkanInstanceBuilder::createInstance(VkInstance& instance, uint32_t reqMajor, uint32_t reqMinor) {
+	// Get SDL extensions
 	std::vector<const char*> extensions;
-
 	platform.getRequiredVulkanExtensions(extensions);
 
-	//add debug utils if validation triggers
-	if (validation) {
+	if (validation)
 		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-	}
 
-	//Validation layers
 	std::vector<const char*> layers;
-	if (validation) {
+	if (validation)
 		layers.push_back("VK_LAYER_KHRONOS_validation");
-	}
 
-	VkApplicationInfo app = {};
+	filterLayers(layers);
+
+	VkApplicationInfo app{};
 	app.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 	app.pApplicationName = "Blasphemy Engine";
 	app.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
 	app.pEngineName = "Blasphemy";
-	app.engineVersion = VK_MAKE_VERSION(1,0,0);
-	app.apiVersion = VK_MAKE_API_VERSION(0, reqMajor, reqMinor, 0);
-
+	app.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+	app.apiVersion = VK_MAKE_VERSION(reqMajor, reqMinor, 0);
 
 	VkDebugUtilsMessengerCreateInfoEXT debugInfo{};
 	if (validation) {
@@ -82,17 +106,17 @@ bool VulkanInstanceBuilder::createInstance(VkInstance& instance) {
 		debugInfo.pfnUserCallback = debugCallback;
 	}
 
-	VkInstanceCreateInfo instanceCreateInfo = {};
-	instanceCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-	instanceCreateInfo.pApplicationInfo = &app;
-	instanceCreateInfo.enabledExtensionCount = (uint32_t)extensions.size();
-	instanceCreateInfo.ppEnabledExtensionNames = extensions.data();
-	instanceCreateInfo.enabledLayerCount = (uint32_t)layers.size();
-	instanceCreateInfo.ppEnabledLayerNames = layers.data();
-	instanceCreateInfo.pNext = validation ? (void*)&debugInfo : nullptr;
+	VkInstanceCreateInfo info{};
+	info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+	info.pApplicationInfo = &app;
+	info.enabledExtensionCount = (uint32_t)extensions.size();
+	info.ppEnabledExtensionNames = extensions.data();
+	info.enabledLayerCount = (uint32_t)layers.size();
+	info.ppEnabledLayerNames = layers.data();
+	info.pNext = validation ? (void*)&debugInfo : nullptr;
 
-	if (vkCreateInstance(&instanceCreateInfo, VK_NULL_HANDLE, &instance) != VK_SUCCESS) {
-		std::cout << "Failed to create vulkan instance\n";
+	if (vkCreateInstance(&info, nullptr, &instance) != VK_SUCCESS) {
+		std::cout << "Failed to create Vulkan instance\n";
 		return false;
 	}
 

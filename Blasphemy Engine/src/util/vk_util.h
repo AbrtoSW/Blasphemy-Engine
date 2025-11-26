@@ -9,6 +9,16 @@
 
 #include "types/vk_types.h"
 
+#define VK_CHECK(x)                                                     \
+    do {                                                                \
+        VkResult err = x;                                               \
+        if (err) {                                                      \
+            fprintf(stderr, "Vulkan error: %d at %s:%d\n",              \
+                    err, __FILE__, __LINE__);                           \
+            abort();                                                    \
+        }                                                               \
+    } while (0)
+
 struct DeletionQueue {
 
 public:

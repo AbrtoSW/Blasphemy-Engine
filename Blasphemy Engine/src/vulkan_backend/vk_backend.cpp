@@ -1,9 +1,9 @@
-#define VMA_IMPLEMENTATION
 //Internal Solutions files
-
 #include "vulkan_backend/vk_backend.h"
 #include "platform/platform.h"
 #include "vulkan_backend/vk_backend_instance_builder.h"
+#include "util/vk_helper.h"
+#include "vulkan_backend/vk_frame_manager.h"
 
 //External Files
 #include <iostream>
@@ -16,7 +16,7 @@ void VulkanBackend::init() {
 
 	init_vulkan();
 
-	frameNumber = 0;
+	
 	lastTime = Clock::now();
 	currentTime = lastTime;
 	deltaTime = 0.0f;
@@ -24,6 +24,8 @@ void VulkanBackend::init() {
 }
 
 void VulkanBackend::run() {
+
+
 	if (!isInitalized) {
 		std::cout << "Engine run() called before init().\n";
 		return;
@@ -44,7 +46,8 @@ void VulkanBackend::run() {
 		//    - record command buffers
 		//    - submit + present
 
-		frameNumber++;
+		frameManager.nextFrame();
+
 	}
 
 	std::cout << "Engine Exiting main loop.\n";
@@ -57,28 +60,27 @@ bool VulkanBackend::init_vulkan() {
 
 	VulkanInstanceBuilder builder(platform);
 
-	if (!builder.create(useValidationLayers, instance, debug_messenger)) {
+	InstanceBuildResult result = builder.create(useValidationLayers, instance, debug_messenger);
+
+	if (!result.success)
 		return false;
-	}
+
+	auto selectedApiMajor = result.apiMajor;
+	auto selectedApiMinor = result.apiMinor;
+
+	std::cout << "Using Vulkan " << selectedApiMajor << "." << selectedApiMinor << "\n";
 
 	volkLoadInstance(instance);
-	
-	// 2. surface
+
 	if (!createSurface())
 		return false;
 
-	// 3. Vulkan driver version
 	if (!queryDriverVersion())
 		return false;
 
-	// 4. dynamic Vulkan version selection (1.1 / 1.2 / 1.3)
-	determineRequestedVulkanVersion();
-
-	// 5. GPU select
 	if (!pickPhysicalDevice())
 		return false;
 
-	// 6. logical device
 	if (!createLogicalDevice())
 		return false;
 
@@ -86,8 +88,14 @@ bool VulkanBackend::init_vulkan() {
 
 	printEnabledFeatures();
 
+	createVMAAllocator();
+
 	initSwapchain();
 	
+	init_command_pools();
+
+	init_frame_sync_objects();
+
 	return true;
 }
 
@@ -115,43 +123,105 @@ bool VulkanBackend::queryDriverVersion() {
 	return true;
 }
 
-void VulkanBackend::determineRequestedVulkanVersion() {
+bool VulkanBackend::init_command_pools() {
 
-	uint32_t sysMajor = VK_VERSION_MAJOR(gpuCapability.apiVersion);
-	uint32_t sysMinor = VK_VERSION_MINOR(gpuCapability.apiVersion);
+	std::cout << "Initiating vulkan command pools\n";
 
-	requestedMajor = 1;
-	requestedMinor = 1;
+	VkCommandPoolCreateInfo commandPoolInfo = vkhelper::command_pool_create_info(graphicsQueueFamily, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
-	if (sysMajor > 1 || (sysMajor == 1 && sysMinor >= 3)) {
-		requestedMajor = 1;
-		requestedMinor = 3;
-	}
-	else if (sysMajor > 1 || (sysMajor == 1 && sysMinor >= 2)) {
-		requestedMajor = 1;
-		requestedMinor = 2;
-	}
-	else {
-		requestedMajor = 1;
-		requestedMinor = 1;
+	for (uint32_t i = 0; i < FRAME_OVERLAP; ++i) {
+
+		FrameData& frame = frameManager.getFrame(i);
+		VK_CHECK(vkCreateCommandPool(device, &commandPoolInfo, nullptr, &frame.commandPool));
+
+		VkCommandBufferAllocateInfo cmdAllocInfo = vkhelper::command_buffer_allocate_info(frame.commandPool, 1);
+
+		VK_CHECK(vkAllocateCommandBuffers(device, &cmdAllocInfo, &frame.mainCommandBuffer));
 	}
 
-	std::cout << "Vulkan Requesting Vulkan "
-		<< requestedMajor << "." << requestedMinor << "\n";
-}
+	VK_CHECK(vkCreateCommandPool(device, &commandPoolInfo, nullptr, &immediateCommandPool));
 
-bool VulkanBackend::init_commands() {
-	std::cout << "[Engine] init_commands() skeleton.\n";
-	// TODO: create command pools / buffers (immediate + per-frame)
+	VkCommandBufferAllocateInfo cmdAllocInfo = vkhelper::command_buffer_allocate_info(immediateCommandPool, 1);
+
+	VK_CHECK(vkAllocateCommandBuffers(device, &cmdAllocInfo, &immediateCommandBuffer));
+
+
 	return true;
 }
 
-bool VulkanBackend::init_sync_structures() {
-	std::cout << "[Engine] init_sync_structures() skeleton.\n";
-	// TODO: create fences/semaphores for frames[FRAME_OVERLAP]
+bool VulkanBackend::init_frame_sync_objects() {
+
+	std::cout << "Initiating vulkan sync structures \n";
+	VkFenceCreateInfo fenceInfo = vkhelper::fence_create_info(VK_FENCE_CREATE_SIGNALED_BIT);
+	VkSemaphoreCreateInfo semaphoreInfo = vkhelper::semaphore_create_info();
+
+	for (unsigned int i = 0; i < FRAME_OVERLAP; ++i) {
+
+		FrameData& frame = frameManager.getFrame(i);
+
+		VK_CHECK(vkCreateFence(device, &fenceInfo, nullptr, &frame.renderFence));
+
+		VK_CHECK(vkCreateSemaphore(device, &semaphoreInfo, nullptr, &frame.swapchainSemaphore));
+	}
+
+	VK_CHECK(vkCreateFence(device, &fenceInfo, nullptr, &immediateFence));
+	
 	return true;
 }
 
+bool VulkanBackend::createVMAAllocator() {
+
+	VmaVulkanFunctions funcs{};
+	funcs.vkGetInstanceProcAddr = vkGetInstanceProcAddr;
+	funcs.vkGetDeviceProcAddr = vkGetDeviceProcAddr;
+
+	funcs.vkGetPhysicalDeviceProperties = vkGetPhysicalDeviceProperties;
+	funcs.vkGetPhysicalDeviceMemoryProperties = vkGetPhysicalDeviceMemoryProperties;
+	funcs.vkAllocateMemory = vkAllocateMemory;
+	funcs.vkFreeMemory = vkFreeMemory;
+	funcs.vkMapMemory = vkMapMemory;
+	funcs.vkUnmapMemory = vkUnmapMemory;
+	funcs.vkFlushMappedMemoryRanges = vkFlushMappedMemoryRanges;
+	funcs.vkInvalidateMappedMemoryRanges = vkInvalidateMappedMemoryRanges;
+	funcs.vkBindBufferMemory = vkBindBufferMemory;
+	funcs.vkBindImageMemory = vkBindImageMemory;
+	funcs.vkGetBufferMemoryRequirements = vkGetBufferMemoryRequirements;
+	funcs.vkGetImageMemoryRequirements = vkGetImageMemoryRequirements;
+	funcs.vkCreateBuffer = vkCreateBuffer;
+	funcs.vkDestroyBuffer = vkDestroyBuffer;
+	funcs.vkCreateImage = vkCreateImage;
+	funcs.vkDestroyImage = vkDestroyImage;
+	funcs.vkCmdCopyBuffer = vkCmdCopyBuffer;
+
+#if VMA_DEDICATED_ALLOCATION || VMA_VULKAN_VERSION >= 1001000
+	funcs.vkGetBufferMemoryRequirements2KHR = vkGetBufferMemoryRequirements2KHR;
+	funcs.vkGetImageMemoryRequirements2KHR = vkGetImageMemoryRequirements2KHR;
+#endif
+
+#if VMA_BIND_MEMORY2 || VMA_VULKAN_VERSION >= 1001000
+	funcs.vkBindBufferMemory2KHR = vkBindBufferMemory2KHR;
+	funcs.vkBindImageMemory2KHR = vkBindImageMemory2KHR;
+#endif
+
+#if VMA_MEMORY_BUDGET || VMA_VULKAN_VERSION >= 1001000
+	funcs.vkGetPhysicalDeviceMemoryProperties2KHR = vkGetPhysicalDeviceMemoryProperties2KHR;
+#endif
+
+	VmaAllocatorCreateInfo info{};
+	info.instance = instance;
+	info.physicalDevice = physicalDevice;
+	info.device = device;
+	info.pVulkanFunctions = &funcs;
+	info.vulkanApiVersion = VK_API_VERSION_1_1;
+	info.flags = VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT;
+
+	if (vmaCreateAllocator(&info, &vmaAllocator) != VK_SUCCESS) {
+		std::cout << "VMA allocator creation failed\n";
+		return false;
+	}
+
+	return true;
+}
 
 void VulkanBackend::update_timing() {
 	currentTime = Clock::now();
@@ -165,8 +235,6 @@ void VulkanBackend::initSwapchain() {
 
 	//renderer->framebuffer_image_resources
 }
-
-
 
 void VulkanBackend::printEnabledFeatures() {
 	std::cout << "\n=== GPU FEATURE REPORT ===\n";

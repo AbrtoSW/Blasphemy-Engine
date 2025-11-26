@@ -18,34 +18,13 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\vk_engine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\platform\platform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\util\vk_util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\vk_engine_instance_builder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\engine\vk_engine_surface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\engine\vk_engine_physical_device.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\engine\vk_engine_logic_device.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\dir\external\volk\volk.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\engine\vk_swapchain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\engine\vk_frame_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\vulkan_backend\vk_backend.cpp">
@@ -72,16 +51,16 @@
     <ClCompile Include="src\engine\BlasphemyEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\util\vk_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\initVMA\initVMA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\engine\vk_engine.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\platform\platform.h">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine\vk_frame_manager.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\util\vk_util.h">
       <Filter>Header Files</Filter>
@@ -89,13 +68,7 @@
     <ClInclude Include="src\types\vk_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\engine\vk_engine_instance_builder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine\vk_swapchain.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\util\vk_init.h">
+    <ClInclude Include="src\util\vk_helper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\vulkan_backend\vk_swapchain.h">

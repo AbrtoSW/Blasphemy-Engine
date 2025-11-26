@@ -1,4 +1,5 @@
 #include "vulkan_backend/vk_frame_manager.h"
+#include <iostream>
 
 FrameManager::FrameManager(uint32_t frameCount) : frames(frameCount), currentIndex(0) {}
 
@@ -15,8 +16,10 @@ uint32_t  FrameManager::getCurrentIndex() const {
 }
 
 
-void FrameManager::advance() {
+void FrameManager::nextFrame() {
 	currentIndex = (currentIndex + 1) % frames.size();
+	// OUTPUT DEBUG
+	// std::cout << "Frame index: " << currentIndex << "\n";
 }
 
 

@@ -31,7 +31,7 @@ public:
 	FrameData& getFrame(uint32_t index);
 
 	uint32_t getCurrentIndex() const;
-	void advance();
+	void nextFrame();
 
 private:
 	std::vector<FrameData> frames;
