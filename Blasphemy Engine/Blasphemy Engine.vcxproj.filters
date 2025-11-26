@@ -24,9 +24,6 @@
     <ClCompile Include="src\util\vk_util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\dir\external\volk\volk.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\vulkan_backend\vk_backend.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -55,6 +52,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\initVMA\initVMA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dir\external\volk\volk.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
