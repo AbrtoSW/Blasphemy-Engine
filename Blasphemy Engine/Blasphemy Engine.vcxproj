@@ -70,6 +70,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <EnableMicrosoftCodeAnalysis>true</EnableMicrosoftCodeAnalysis>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -108,6 +111,8 @@
       <AdditionalIncludeDirectories>C:\Users\Alberto\source\repos\Blasphemy Engine\dir\external;$(ProjectDir)src;$(SolutionDir)dir\include\;$(VULKAN_SDK)\Include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>
       </DisableSpecificWarnings>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -135,6 +140,7 @@
     <ClCompile Include="..\dir\external\volk\volk.c" />
     <ClCompile Include="src\initVMA\initVMA.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <DisableAnalyzeExternal Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DisableAnalyzeExternal>
     </ClCompile>
     <ClCompile Include="src\engine\BlasphemyEngine.cpp" />
     <ClCompile Include="src\util\vk_helper.cpp" />

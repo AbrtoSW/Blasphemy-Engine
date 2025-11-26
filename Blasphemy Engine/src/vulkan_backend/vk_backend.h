@@ -7,6 +7,8 @@
 #include "vulkan_backend/vk_frame_manager.h"
 #include "vulkan_backend/vk_swapchain.h"
 
+
+
 class Platform;
 class FrameManager;
 
@@ -70,20 +72,20 @@ private:
 	uint32_t requestedMajor = 1;
 	uint32_t requestedMinor = 1;
 
-	TimePoint lastTime = {};
-	TimePoint currentTime = {};
+	TimePoint lastTime;
+	TimePoint currentTime;
 	float deltaTime = 0.0f;
 
 	std::vector<const char*> extensions;
 	GpuCapabilities gpuCapability{};
 
-	VkFence immediateFence;
-	VkCommandBuffer immediateCommandBuffer;
-	VkCommandPool immediateCommandPool;
+	VkFence immediateFence = {};
+	VkCommandBuffer immediateCommandBuffer = {};
+	VkCommandPool immediateCommandPool = {};
 
 
 	FrameManager frameManager;
-	RendererMode rendererMode;
+	RendererMode rendererMode = {};
 
 
 
