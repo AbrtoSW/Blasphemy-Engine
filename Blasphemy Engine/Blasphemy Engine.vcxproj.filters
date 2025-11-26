@@ -54,7 +54,7 @@
     <ClCompile Include="src\initVMA\initVMA.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dir\external\volk\volk.c">
+    <ClCompile Include="external\volk\volk.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
