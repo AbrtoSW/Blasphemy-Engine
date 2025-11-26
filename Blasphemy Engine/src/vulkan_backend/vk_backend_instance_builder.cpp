@@ -15,38 +15,25 @@ void VulkanInstanceBuilder::filterLayers(std::vector<const char*>& layers) {
 	std::vector<VkLayerProperties> props(count);
 	vkEnumerateInstanceLayerProperties(&count, props.data());
 
-	std::vector<const char*> filtered;
+	bool foundValidation = false;
 
-	for (const char* name : layers) {
-		for (auto& p : props) {
-			if (strcmp(name, p.layerName) == 0) {
-				filtered.push_back(name);
-				break;
-			}
+	for (auto& p : props) {
+		if (strcmp(p.layerName, "VK_LAYER_KHRONOS_validation") == 0) {
+			foundValidation = true;
+			break;
 		}
 	}
 	
-	layers = filtered;
-}
-
-void VulkanInstanceBuilder::warnImplicitLayers() {
-	uint32_t count = 0;
-	vkEnumerateInstanceLayerProperties(&count, nullptr);
-	std::vector<VkLayerProperties> props(count);
-	vkEnumerateInstanceLayerProperties(&count, props.data());
-
-	for (auto& p : props) {
-		if (strstr(p.layerName, "OW_OVERLAY") ||
-			strstr(p.layerName, "OW_OBS_HOOK") ||
-			strstr(p.layerName, "OBS") ||
-			strstr(p.layerName, "overlay"))
-		{
-			std::cout << "[Warning] Implicit Vulkan overlay layer detected: "
-				<< p.layerName << "\n"
-				<< "This layer may cause stability issues.\n";
-		}
+	if (!foundValidation) {
+		std::cout << "[Validation] VK_LAYER_KHRONOS_validation not found. Validation is DISABLED.\n";
+		layers.clear();               // no layer available
+		return;
 	}
+
+	layers.clear();
+	layers.push_back("VK_LAYER_KHRONOS_validation");
 }
+
 
 InstanceBuildResult VulkanInstanceBuilder::create(bool enableValidation, VkInstance& instance, VkDebugUtilsMessengerEXT& debugMessenger) {
 
@@ -91,7 +78,7 @@ bool VulkanInstanceBuilder::createInstance(VkInstance& instance, uint32_t reqMaj
 	app.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
 	app.pEngineName = "Blasphemy";
 	app.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-	app.apiVersion = VK_MAKE_VERSION(reqMajor, reqMinor, 0);
+	app.apiVersion = VK_MAKE_API_VERSION(0,reqMajor, reqMinor, 0);
 
 	VkDebugUtilsMessengerCreateInfoEXT debugInfo{};
 	if (validation) {
@@ -106,6 +93,19 @@ bool VulkanInstanceBuilder::createInstance(VkInstance& instance, uint32_t reqMaj
 		debugInfo.pfnUserCallback = debugCallback;
 	}
 
+	VkValidationFeatureEnableEXT enables[] = {
+	   VK_VALIDATION_FEATURE_ENABLE_BEST_PRACTICES_EXT,
+	   VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT
+	};
+
+	VkValidationFeaturesEXT validationFeatures{};
+	if (validation) {
+		validationFeatures.sType = VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT;
+		validationFeatures.enabledValidationFeatureCount = 2;
+		validationFeatures.pEnabledValidationFeatures = enables;
+		validationFeatures.pNext = nullptr;
+	}
+
 	VkInstanceCreateInfo info{};
 	info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	info.pApplicationInfo = &app;
@@ -113,7 +113,7 @@ bool VulkanInstanceBuilder::createInstance(VkInstance& instance, uint32_t reqMaj
 	info.ppEnabledExtensionNames = extensions.data();
 	info.enabledLayerCount = (uint32_t)layers.size();
 	info.ppEnabledLayerNames = layers.data();
-	info.pNext = validation ? (void*)&debugInfo : nullptr;
+	info.pNext = validation ? (void*)&validationFeatures : nullptr;
 
 	if (vkCreateInstance(&info, nullptr, &instance) != VK_SUCCESS) {
 		std::cout << "Failed to create Vulkan instance\n";
@@ -127,7 +127,7 @@ bool VulkanInstanceBuilder::createDebugMessenger(VkInstance& instance, VkDebugUt
 
 	if (!validation) return true;
 
-	VkDebugUtilsMessengerCreateInfoEXT info{};
+	VkDebugUtilsMessengerCreateInfoEXT info = {};
 	info.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
 	info.messageSeverity =
 		VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |

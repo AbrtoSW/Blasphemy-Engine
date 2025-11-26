@@ -27,7 +27,7 @@ void BlasphemyEngine::run() {
 }
 
 void BlasphemyEngine::shutdown() {
-	//vKBackend.cleanup();
+	vkBackend.cleanup();
 	platform.shutdown();
 }
 

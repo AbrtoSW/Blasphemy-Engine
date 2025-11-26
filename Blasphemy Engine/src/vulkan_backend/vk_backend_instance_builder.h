@@ -25,6 +25,4 @@ private:
 	bool createInstance(VkInstance& instance, uint32_t reqMajor, uint32_t reqMinor);
 	bool createDebugMessenger(VkInstance& instance, VkDebugUtilsMessengerEXT& debugMessenger);
 	void filterLayers(std::vector<const char*>& layers);
-	void warnImplicitLayers();
-	uint32_t detectImplicitLayerApiVersion();
 };

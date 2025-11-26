@@ -3,7 +3,6 @@
 #define VK_NO_PROTOTYPES
 #include <vma/vk_mem_alloc.h>
 #include <chrono>
-#include "volk/volk.h"
 #include "vulkan_backend/vk_frame_manager.h"
 #include "vulkan_backend/vk_swapchain.h"
 
@@ -54,7 +53,6 @@ private:
 
 	bool isInitalized = { false };
 	bool stopRendering = { false };
-	bool useValidationLayers = true;
 
 	VmaAllocator vmaAllocator = VK_NULL_HANDLE;
 	VkInstance instance = VK_NULL_HANDLE;
@@ -82,11 +80,12 @@ private:
 	VkFence immediateFence = {};
 	VkCommandBuffer immediateCommandBuffer = {};
 	VkCommandPool immediateCommandPool = {};
-
+	
 
 	FrameManager frameManager;
 	RendererMode rendererMode = {};
 
+	 bool useValidationLayers = true;
 
 
 	bool init_vulkan();
@@ -105,5 +104,6 @@ private:
 	bool createLogicalDevice();
 	bool queryDriverVersion();
 	void printEnabledFeatures();
+	
 
 };

@@ -7,6 +7,23 @@
 #include "types/vk_types.h"
 #include "util/vk_util.h"
 
+struct FrameGarbage {
+	std::vector<VkBuffer> buffers;
+	std::vector<VmaAllocation> bufferAllocs;
+
+	std::vector<VkImage> images;
+	std::vector<VmaAllocation> imageAllocs;
+
+	std::vector<VkImageView> imageViews;
+	std::vector<VkSampler> samplers;
+
+	std::vector<VkPipeline> pipelines;
+	std::vector<VkPipelineLayout> pipelineLayouts;
+
+	std::vector<VkDescriptorPool> descriptorPools;
+	std::vector<VkDescriptorSetLayout> descriptorSetLayouts;
+};
+
 struct FrameData {
 	int currentFrame;
 	VkCommandPool commandPool;

@@ -7,6 +7,8 @@
 
 //External Files
 #include <iostream>
+#include <volk/volk.h>
+
 
 void VulkanBackend::init() {
 	if (isInitalized) {
@@ -53,6 +55,42 @@ void VulkanBackend::run() {
 	std::cout << "Engine Exiting main loop.\n";
 }
 
+void VulkanBackend::cleanup() {
+
+	if (!isInitalized) {
+		return;
+	}
+
+	vkDeviceWaitIdle(device);
+
+	for (uint32_t i = 0; i < FRAME_OVERLAP; ++i) {
+
+		FrameData& frame = frameManager.getFrame(i);
+
+		std::cout << "[Destroy] CommandPool for frame " << i << "\n";
+		vkDestroyCommandPool(device, frame.commandPool, nullptr);
+
+		std::cout << "[Destroy] RenderFence for frame " << i << "\n";
+		vkDestroyFence(device, frame.renderFence, nullptr);
+
+		std::cout << "[Destroy] SwapchainSemaphore for frame " << i << "\n";
+		vkDestroySemaphore(device, frame.swapchainSemaphore, nullptr);
+	}
+
+	vkDestroyCommandPool(device, immediateCommandPool, nullptr);
+	vkDestroyFence(device, immediateFence, nullptr);
+
+
+
+
+	std::cout << "[Destroy] Swapchain images/views/framebuffers\n";
+	swapchain.destroy(device);
+	vkDestroySurfaceKHR(instance, surface, nullptr);
+	vkDestroyDevice(device, nullptr);
+	vkDestroyDebugUtilsMessengerEXT(instance, debug_messenger, nullptr);
+	vkDestroyInstance(instance, nullptr);
+}
+
 
 bool VulkanBackend::init_vulkan() {
 
@@ -60,7 +98,7 @@ bool VulkanBackend::init_vulkan() {
 
 	VulkanInstanceBuilder builder(platform);
 
-	InstanceBuildResult result = builder.create(useValidationLayers, instance, debug_messenger);
+	InstanceBuildResult result = builder.create(useValidationLayers = true, instance, debug_messenger);
 
 	if (!result.success)
 		return false;
