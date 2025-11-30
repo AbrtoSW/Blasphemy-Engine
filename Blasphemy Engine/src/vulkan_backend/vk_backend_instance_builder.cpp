@@ -63,8 +63,10 @@ bool VulkanInstanceBuilder::createInstance(VkInstance& instance, uint32_t reqMaj
 	std::vector<const char*> extensions;
 	platform.getRequiredVulkanExtensions(extensions);
 
+#ifdef _DEBUG
 	if (validation)
 		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+#endif
 
 	std::vector<const char*> layers;
 	if (validation)

@@ -103,7 +103,7 @@ private:
 	bool queryFeatures(VkPhysicalDevice device);
 	bool createLogicalDevice();
 	bool queryDriverVersion();
-	void printEnabledFeatures();
+	void printAvailableGPUFeatures();
 	
 
 };

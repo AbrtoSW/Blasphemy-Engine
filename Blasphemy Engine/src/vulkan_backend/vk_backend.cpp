@@ -124,7 +124,7 @@ bool VulkanBackend::init_vulkan() {
 
 	volkLoadDevice(device);
 
-	printEnabledFeatures();
+	printAvailableGPUFeatures();
 
 	createVMAAllocator();
 
@@ -274,7 +274,7 @@ void VulkanBackend::initSwapchain() {
 	//renderer->framebuffer_image_resources
 }
 
-void VulkanBackend::printEnabledFeatures() {
+void VulkanBackend::printAvailableGPUFeatures() {
 	std::cout << "\n=== GPU FEATURE REPORT ===\n";
 
 	std::cout << "Core Sampler Anisotropy       : "
