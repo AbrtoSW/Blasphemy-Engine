@@ -16,7 +16,7 @@ void VulkanBackend::init() {
 		return;
 	}
 
-	init_vulkan();
+	initVulkan();
 
 	
 	lastTime = Clock::now();
@@ -92,7 +92,7 @@ void VulkanBackend::cleanup() {
 }
 
 
-bool VulkanBackend::init_vulkan() {
+bool VulkanBackend::initVulkan() {
 
 	volkInitialize();
 
@@ -130,9 +130,9 @@ bool VulkanBackend::init_vulkan() {
 
 	initSwapchain();
 	
-	init_command_pools();
+	initCommandPools();
 
-	init_frame_sync_objects();
+	initFrameSyncObjects();
 
 	return true;
 }
@@ -161,7 +161,7 @@ bool VulkanBackend::queryDriverVersion() {
 	return true;
 }
 
-bool VulkanBackend::init_command_pools() {
+bool VulkanBackend::initCommandPools() {
 
 	std::cout << "Initiating vulkan command pools\n";
 
@@ -187,7 +187,7 @@ bool VulkanBackend::init_command_pools() {
 	return true;
 }
 
-bool VulkanBackend::init_frame_sync_objects() {
+bool VulkanBackend::initFrameSyncObjects() {
 
 	std::cout << "Initiating vulkan sync structures \n";
 	VkFenceCreateInfo fenceInfo = vkhelper::fence_create_info(VK_FENCE_CREATE_SIGNALED_BIT);

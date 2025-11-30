@@ -11,7 +11,7 @@
 
 void BlasphemyEngine::init() {
 
-	type_out("Initiating Blasphemy Engine" , 30);
+	typeOut("Initiating Blasphemy Engine" , 30);
 
 	if (!platform.init())
 		return;
@@ -32,7 +32,7 @@ void BlasphemyEngine::shutdown() {
 }
 
 
-void BlasphemyEngine::type_out(const std::string& s, int delay) {
+void BlasphemyEngine::typeOut(const std::string& s, int delay) {
 	for (auto& c : s) {
 		std::cout << c << std::flush;
 		std::this_thread::sleep_for(std::chrono::milliseconds(delay));

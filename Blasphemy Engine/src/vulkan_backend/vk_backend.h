@@ -88,9 +88,9 @@ private:
 	 bool useValidationLayers = true;
 
 
-	bool init_vulkan();
-	bool init_command_pools();
-	bool init_frame_sync_objects();
+	bool initVulkan();
+	bool initCommandPools();
+	bool initFrameSyncObjects();
 
 	bool createVMAAllocator();
 	void update_timing();

@@ -13,7 +13,7 @@ public:
 	void shutdown();
 
 private:
-	void type_out(const std::string& s, int delay);
+	void typeOut(const std::string& s, int delay);
 
 	Platform platform;
 	VulkanBackend vkBackend{ platform };

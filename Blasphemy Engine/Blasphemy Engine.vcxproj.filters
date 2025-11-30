@@ -57,6 +57,15 @@
     <ClCompile Include="external\volk\volk.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="renderer\descriptors.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer\descriptors.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\descriptors.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\platform\platform.h">
@@ -84,6 +93,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\engine\BlasphemyEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderer\renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\descriptors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -111,8 +111,8 @@
       <AdditionalIncludeDirectories>$(ProjectDir)external;$(ProjectDir)src;$(VULKAN_SDK)\Include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>
       </DisableSpecificWarnings>
-      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
-      <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <DisableAnalyzeExternal>false</DisableAnalyzeExternal>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -143,6 +143,7 @@
       <DisableAnalyzeExternal Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DisableAnalyzeExternal>
     </ClCompile>
     <ClCompile Include="src\engine\BlasphemyEngine.cpp" />
+    <ClCompile Include="src\renderer\descriptors.cpp" />
     <ClCompile Include="src\util\vk_helper.cpp" />
     <ClCompile Include="src\vulkan_backend\vk_backend.cpp" />
     <ClCompile Include="src\vulkan_backend\vk_backend_instance_builder.cpp" />
@@ -157,6 +158,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\BlasphemyEngine.h" />
+    <ClInclude Include="src\renderer\descriptors.h" />
+    <ClInclude Include="src\renderer\renderer.h" />
     <ClInclude Include="src\vulkan_backend\vk_backend.h" />
     <ClInclude Include="src\vulkan_backend\vk_backend_instance_builder.h" />
     <ClInclude Include="src\vulkan_backend\vk_frame_manager.h" />
