@@ -4,3 +4,7 @@ x64/
 *.pdb
 *.dll
 *.exe
+
+# vendor libs
+Blasphemy Engine/external/lib/debug/**
+Blasphemy Engine/external/lib/release/**
