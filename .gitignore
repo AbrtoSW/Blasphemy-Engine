@@ -1,6 +1,6 @@
 .vs/
 x64/
-*.ipch
+*.lib
 *.pdb
-*.obj
-*.log
+*.dll
+*.exe
