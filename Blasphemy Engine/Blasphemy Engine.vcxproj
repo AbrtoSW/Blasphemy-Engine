@@ -113,12 +113,14 @@
       </DisableSpecificWarnings>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
       <DisableAnalyzeExternal>false</DisableAnalyzeExternal>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)external\lib\debug;$(VULKAN_SDK)\Lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>vulkan-1.lib;fastgltf.lib;glfw3.lib;vk-bootstrap.lib;SDL3.lib;spirv-tools.lib;spirv-tools-opt.lib;glslang.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(VULKAN_SDK)\Lib;$(ProjectDir)external\lib\debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vulkan-1.lib;fastgltf.lib;glfw3.lib;SDL3.lib;glslangd.lib;glslang-default-resource-limitsd.lib;MachineIndependentd.lib;SPIRV-Toolsd.lib;SPIRV-Tools-optd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -145,7 +147,10 @@
     <ClCompile Include="src\engine\BlasphemyEngine.cpp" />
     <ClCompile Include="src\renderer\descriptors\descriptors.cpp" />
     <ClCompile Include="src\renderer\pipelines\pipeline_builder.cpp" />
+    <ClCompile Include="src\renderer\pipelines\pipeline_manager.cpp" />
+    <ClCompile Include="src\renderer\shader\glslangDefaultTBuiltinResource.cpp" />
     <ClCompile Include="src\renderer\shader\shader_util.cpp" />
+    <ClCompile Include="src\util\utility.cpp" />
     <ClCompile Include="src\util\vk_helper.cpp" />
     <ClCompile Include="src\vulkan_backend\vk_backend.cpp" />
     <ClCompile Include="src\vulkan_backend\vk_backend_instance_builder.cpp" />
@@ -162,10 +167,13 @@
     <ClInclude Include="src\engine\BlasphemyEngine.h" />
     <ClInclude Include="src\renderer\descriptors\descriptors.h" />
     <ClInclude Include="src\renderer\pipelines\pipeline_builder.h" />
+    <ClInclude Include="src\renderer\pipelines\pipeline_manager.h" />
     <ClInclude Include="src\renderer\pipelines\pipeline_types.h" />
     <ClInclude Include="src\renderer\renderer.h" />
+    <ClInclude Include="src\renderer\shader\glslangDefaultTBuiltinResource.h" />
     <ClInclude Include="src\renderer\shader\shader_types.h" />
     <ClInclude Include="src\renderer\shader\shader_util.h" />
+    <ClInclude Include="src\util\utility.h" />
     <ClInclude Include="src\vulkan_backend\vk_backend.h" />
     <ClInclude Include="src\vulkan_backend\vk_backend_instance_builder.h" />
     <ClInclude Include="src\vulkan_backend\vk_frame_manager.h" />

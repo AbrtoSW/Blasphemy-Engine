@@ -8,4 +8,6 @@ namespace vkhelper {
 	VkFenceCreateInfo fence_create_info(VkFenceCreateFlags flags = 0);
 	VkSemaphoreCreateInfo semaphore_create_info(VkSemaphoreCreateFlags flags = 0);
 
+	VkPipelineShaderStageCreateInfo pipeline_shader_stage_create_info(VkShaderStageFlagBits stage, VkShaderModule shaderModule, const char* entry = "main");
+
 }

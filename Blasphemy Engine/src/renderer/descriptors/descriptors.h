@@ -65,7 +65,6 @@ struct DescriptorAllocator {
 struct DescriptorAllocatorGrowable {
 public:
 
-	~DescriptorAllocatorGrowable();
 
 	struct PoolSizeRatio {
 		VkDescriptorType type;

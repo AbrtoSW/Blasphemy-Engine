@@ -24,4 +24,5 @@ public:
 	void enable_blending_additive();
 	void enable_blending_alphablend();
 	void set_renderpass(VkRenderPass rp, uint32_t subpass = 0);
+	void setColorAttachmentCount(uint32_t count);
 };

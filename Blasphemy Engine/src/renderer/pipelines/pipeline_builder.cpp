@@ -1,4 +1,6 @@
 #include "pipeline_builder.h"
+#include "util/vk_helper.h"
+
 #include <iostream>
 
 void PipelineBuilder::clear() {
@@ -10,7 +12,6 @@ void PipelineBuilder::clear() {
 	c.rasterizer = { VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO };
 	c.multisampling = { VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO };
 	c.depthStencil = { VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO };
-	c.colorBlendAttachment = {};
 
 	c.dynamicStateInfo = { VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO };
 	c.viewportStateInfo = { VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO };
@@ -20,6 +21,8 @@ void PipelineBuilder::clear() {
 	c.shaderStages.clear();
 	c.dynamicStates.clear();
 	c.setLayouts.clear();
+	c.colorBlendAttachments.clear();
+
 }
 
 void PipelineBuilder::setPipelineLayout(VkPipelineLayout layout) {
@@ -33,12 +36,17 @@ VkPipeline PipelineBuilder::build_pipeline(VkDevice device, PipelineRes* out) {
 	c.viewportStateInfo.viewportCount = 1;
 	c.viewportStateInfo.scissorCount = 1;
 
+	if (c.colorBlendAttachments.empty()) {
+		setColorAttachmentCount(1);
+	}
+
 	c.colorBlendingInfo = { VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO };
 	c.colorBlendingInfo.logicOpEnable = VK_FALSE;
 	c.colorBlendingInfo.logicOp = VK_LOGIC_OP_COPY;
-	c.colorBlendingInfo.attachmentCount = 1;
+	c.colorBlendingInfo.attachmentCount = (uint32_t)c.colorBlendAttachments.size();
+	c.colorBlendingInfo.pAttachments = c.colorBlendAttachments.data();
 
-	c.vertexInputInfo = { VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO };
+	c.vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
 	c.dynamicStates = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
 	c.dynamicStateInfo = { VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO };
@@ -69,6 +77,10 @@ VkPipeline PipelineBuilder::build_pipeline(VkDevice device, PipelineRes* out) {
 	cfg.pipeline = pipeline;
 
 	if (out) {
+		if (out->type == PipelineType::Uninitialized) {
+			std::cout << ".type is not initialized, hot loading shaders won't work\n";
+		}
+
 		out->pipeline = pipeline;
 		out->pLayout = cfg.pLayout;
 		out->config = cfg.config;
@@ -82,18 +94,9 @@ void PipelineBuilder::set_shaders(VkShaderModule vert, VkShaderModule frag) {
 
 	c.shaderStages.clear();
 
-	VkPipelineShaderStageCreateInfo vs{ VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO };
-	vs.stage = VK_SHADER_STAGE_VERTEX_BIT;
-	vs.module = vert;
-	vs.pName = "main";
+	c.shaderStages.push_back(vkhelper::pipeline_shader_stage_create_info(VK_SHADER_STAGE_VERTEX_BIT, vert));
+	c.shaderStages.push_back(vkhelper::pipeline_shader_stage_create_info(VK_SHADER_STAGE_FRAGMENT_BIT, frag));
 
-	VkPipelineShaderStageCreateInfo fs{ VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO };
-	fs.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-	fs.module = frag;
-	fs.pName = "main";
-
-	c.shaderStages.push_back(vs);
-	c.shaderStages.push_back(fs);
 }
 
 void PipelineBuilder::set_polygon_mode(VkPolygonMode mode) {
@@ -112,11 +115,14 @@ void PipelineBuilder::set_multisampling_none() {
 }
 
 void PipelineBuilder::disable_blending() {
-	auto& a = cfg.config.colorBlendAttachment;
-	a.colorWriteMask = VK_COLOR_COMPONENT_R_BIT |
-		VK_COLOR_COMPONENT_G_BIT |
-		VK_COLOR_COMPONENT_B_BIT |
-		VK_COLOR_COMPONENT_A_BIT;
+	auto& attachments = cfg.config.colorBlendAttachments;
+	
+	if (attachments.empty()) {
+		setColorAttachmentCount(1);
+	}
+
+	VkPipelineColorBlendAttachmentState& a = attachments[0];
+	a.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 	a.blendEnable = VK_FALSE;
 }
 
@@ -139,7 +145,12 @@ void PipelineBuilder::set_input_topology(VkPrimitiveTopology topology) {
 }
 
 void PipelineBuilder::enable_blending_additive() {
-	auto& a = cfg.config.colorBlendAttachment;
+	auto& attachments = cfg.config.colorBlendAttachments;
+
+	if (attachments.empty()) {
+		setColorAttachmentCount(1);
+	}
+	VkPipelineColorBlendAttachmentState& a = attachments[0];
 	a.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 	a.blendEnable = VK_TRUE;
 	a.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
@@ -151,7 +162,12 @@ void PipelineBuilder::enable_blending_additive() {
 }
 
 void PipelineBuilder::enable_blending_alphablend() {
-	auto& a = cfg.config.colorBlendAttachment;
+	auto& attachments = cfg.config.colorBlendAttachments;
+	if (attachments.empty()) {
+		setColorAttachmentCount(1);
+	}
+
+	VkPipelineColorBlendAttachmentState& a = attachments[0];
 	a.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 	a.blendEnable = VK_TRUE;
 	a.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
@@ -165,4 +181,20 @@ void PipelineBuilder::enable_blending_alphablend() {
 void PipelineBuilder::set_renderpass(VkRenderPass rp, uint32_t subpass) {
 	cfg.config.renderPass = rp;
 	cfg.config.subpass = subpass;
+}
+
+void PipelineBuilder::setColorAttachmentCount(uint32_t count) {
+	auto& attachments = cfg.config.colorBlendAttachments;
+	attachments.resize(count);
+
+	for (auto& a : attachments) {
+		a.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+		a.blendEnable = VK_FALSE;
+		a.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
+		a.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO;
+		a.colorBlendOp = VK_BLEND_OP_ADD;
+		a.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+		a.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+		a.alphaBlendOp = VK_BLEND_OP_ADD;
+	}
 }

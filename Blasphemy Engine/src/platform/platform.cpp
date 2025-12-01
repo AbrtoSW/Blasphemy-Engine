@@ -104,3 +104,7 @@ void Platform::getRequiredVulkanExtensions(std::vector<const char*>& outExtensio
 const std::filesystem::path& Platform::getAssetsRoot() const {
 	return assetsRoot;
 }
+
+std::filesystem::path Platform::resolveAsset(const std::string& relative) const {
+	return assetsRoot / relative;
+}

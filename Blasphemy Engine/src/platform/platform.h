@@ -21,6 +21,7 @@ public:
 	VkSurfaceKHR createVulkanSurface(VkInstance, VkAllocationCallbacks* allocator);
 	void getRequiredVulkanExtensions(std::vector<const char*>& outExtensions) const;
 	const std::filesystem::path& getAssetsRoot() const;
+	std::filesystem::path resolveAsset(const std::string& relative) const;
 
 
 private:

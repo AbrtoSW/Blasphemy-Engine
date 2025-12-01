@@ -102,3 +102,4 @@ void DeletionQueue::resizeFlush(VkDevice device, VmaAllocator& vmaAllocator) {
 		}
 	}
 }
+
