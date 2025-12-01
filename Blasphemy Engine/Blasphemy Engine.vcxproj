@@ -143,7 +143,9 @@
       <DisableAnalyzeExternal Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DisableAnalyzeExternal>
     </ClCompile>
     <ClCompile Include="src\engine\BlasphemyEngine.cpp" />
-    <ClCompile Include="src\renderer\descriptors.cpp" />
+    <ClCompile Include="src\renderer\descriptors\descriptors.cpp" />
+    <ClCompile Include="src\renderer\pipelines\pipeline_builder.cpp" />
+    <ClCompile Include="src\renderer\shader\shader_util.cpp" />
     <ClCompile Include="src\util\vk_helper.cpp" />
     <ClCompile Include="src\vulkan_backend\vk_backend.cpp" />
     <ClCompile Include="src\vulkan_backend\vk_backend_instance_builder.cpp" />
@@ -158,8 +160,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\BlasphemyEngine.h" />
-    <ClInclude Include="src\renderer\descriptors.h" />
+    <ClInclude Include="src\renderer\descriptors\descriptors.h" />
+    <ClInclude Include="src\renderer\pipelines\pipeline_builder.h" />
+    <ClInclude Include="src\renderer\pipelines\pipeline_types.h" />
     <ClInclude Include="src\renderer\renderer.h" />
+    <ClInclude Include="src\renderer\shader\shader_types.h" />
+    <ClInclude Include="src\renderer\shader\shader_util.h" />
     <ClInclude Include="src\vulkan_backend\vk_backend.h" />
     <ClInclude Include="src\vulkan_backend\vk_backend_instance_builder.h" />
     <ClInclude Include="src\vulkan_backend\vk_frame_manager.h" />
