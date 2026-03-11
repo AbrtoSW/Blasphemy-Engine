@@ -1,16 +1,23 @@
 #pragma once
 
 class VulkanBackend;
+class FrameManager;
 
 class Renderer {
 
 public:
 
-	Renderer(VulkanBackend& backend) : backend(backend) {};
+	Renderer(VulkanBackend& backend, FrameManager& frameManager) : backend(backend), frameManager(frameManager) {};
+
+	void renderFrame();
 
 private:
-	VulkanBackend& backend;
 
+	VulkanBackend& backend;
+	FrameManager& frameManager;
+	
+	
+	
 	void initDescriptors();
 
 	void createRenderTargets();
@@ -18,6 +25,8 @@ private:
 	void createLightingTargets();
 	void createTransparencyTargets();
 	void createPostFXTargets();
+
+
 
 
 };

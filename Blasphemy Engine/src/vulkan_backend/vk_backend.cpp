@@ -10,50 +10,24 @@
 #include <volk/volk.h>
 
 
-void VulkanBackend::init() {
+bool VulkanBackend::init() {
+
 	if (isInitalized) {
-		std::cout << "Engine init() called twice.\n";
-		return;
+		return true;
 	}
 
-	initVulkan();
-
+	if (!initVulkan()) {
+		return false;
+	}
 	
 	lastTime = Clock::now();
 	currentTime = lastTime;
 	deltaTime = 0.0f;
 	isInitalized = true;
+
+	return true;
 }
 
-void VulkanBackend::run() {
-
-
-	if (!isInitalized) {
-		std::cout << "Engine run() called before init().\n";
-		return;
-	}
-
-	std::cout << "Engine Entering main loop.\n";
-
-	while (!stopRendering && !platform.shouldClose()) {
-		// 1) timing
-		update_timing();
-
-		// 2) poll platform events (SDL etc. lives in Platform)
-		platform.pollEvents();
-
-		// 3) per-frame engine work will go here later:
-		//    - acquire swapchain image
-		//    - get current FrameData
-		//    - record command buffers
-		//    - submit + present
-
-		frameManager.nextFrame();
-
-	}
-
-	std::cout << "Engine Exiting main loop.\n";
-}
 
 void VulkanBackend::cleanup() {
 
@@ -82,15 +56,14 @@ void VulkanBackend::cleanup() {
 
 
 
-
 	std::cout << "[Destroy] Swapchain images/views/framebuffers\n";
 	swapchain.destroy(device);
 	vkDestroySurfaceKHR(instance, surface, nullptr);
 	vkDestroyDevice(device, nullptr);
 	vkDestroyDebugUtilsMessengerEXT(instance, debug_messenger, nullptr);
 	vkDestroyInstance(instance, nullptr);
+	isInitalized = false;
 }
-
 
 bool VulkanBackend::initVulkan() {
 

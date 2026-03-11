@@ -43,9 +43,9 @@ public:
 	VulkanBackend(Platform& platform) 
 		: platform(platform), frameManager(FRAME_OVERLAP) {}
 
-	void init();
-	void run();
+	bool init();
 	void cleanup();
+	void update_timing();
 
 private:
 
@@ -93,7 +93,6 @@ private:
 	bool initFrameSyncObjects();
 
 	bool createVMAAllocator();
-	void update_timing();
 
 	void initSwapchain();
 	bool createSurface();

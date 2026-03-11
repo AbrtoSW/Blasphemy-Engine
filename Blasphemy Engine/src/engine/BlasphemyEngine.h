@@ -8,7 +8,7 @@ class BlasphemyEngine {
 
 public:
 	
-	void init();
+	bool init();
 	void run();
 	void shutdown();
 
