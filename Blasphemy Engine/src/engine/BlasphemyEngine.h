@@ -3,6 +3,7 @@
 #include <string>
 #include "platform/platform.h"
 #include "vulkan_backend/vk_backend.h"
+#include "renderer/renderer.h"
 
 class BlasphemyEngine {
 
@@ -15,8 +16,10 @@ public:
 private:
 	void typeOut(const std::string& s, int delay);
 
-	Platform platform;
+	std::uint64_t frameNumber{};
+	Platform platform{};
 	VulkanBackend vkBackend{ platform };
+	Renderer renderer{ vkBackend, vkBackend.frameManager };
 
 };
 

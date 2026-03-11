@@ -41,7 +41,9 @@ void BlasphemyEngine::run() {
 		//    - record command buffers
 		//    - submit + present
 
-
+		//renderer.renderFrame();
+	
+		frameNumber++;
 	}
 	
 	std::cout << "Engine Exiting main loop.\n";

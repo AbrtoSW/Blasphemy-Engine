@@ -4,7 +4,7 @@
 
 bool VulkanSwapchain::create(VkPhysicalDevice physicalDevice, VkDevice device, VkSurfaceKHR surface, uint32_t width, uint32_t height) {
 
-	VkSurfaceCapabilitiesKHR caps = {};
+	VkSurfaceCapabilitiesKHR caps{};
 	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, &caps);
 
 	uint32_t formatCount = 0;
@@ -124,7 +124,7 @@ VkExtent2D VulkanSwapchain::chooseExtent(const VkSurfaceCapabilitiesKHR& caps, u
 		return caps.currentExtent;
 	}
 
-	VkExtent2D e = {};
+	VkExtent2D e{};
 	e.width = std::clamp(width, caps.minImageExtent.width, caps.maxImageExtent.width);
 	e.height = std::clamp(height, caps.minImageExtent.height, caps.maxImageExtent.height);
 

@@ -4,7 +4,7 @@
 bool VulkanBackend::createLogicalDevice() {
 	
 	float queuePriority = 1.0f;
-	VkDeviceQueueCreateInfo queueInfo = {};
+	VkDeviceQueueCreateInfo queueInfo{};
 	queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 	queueInfo.queueFamilyIndex = graphicsQueueFamily;
 	queueInfo.queueCount = 1;
@@ -25,7 +25,7 @@ bool VulkanBackend::createLogicalDevice() {
 	f11.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
 	f11.pNext = &f12;
 
-	VkPhysicalDeviceFeatures2 features2 = {};
+	VkPhysicalDeviceFeatures2 features2{};
 	features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
 	features2.features = core;
 	features2.pNext = &f11;

@@ -18,18 +18,18 @@ enum class PipelineType {
 };
 
 struct BaseGraphicsPipelineConfig {
-	VkPipelineInputAssemblyStateCreateInfo     inputAssembly = {};
-	VkPipelineRasterizationStateCreateInfo     rasterizer = {};
-	VkPipelineMultisampleStateCreateInfo       multisampling = {};
-	VkPipelineDepthStencilStateCreateInfo      depthStencil = {};
+	VkPipelineInputAssemblyStateCreateInfo     inputAssembly{};
+	VkPipelineRasterizationStateCreateInfo     rasterizer{};
+	VkPipelineMultisampleStateCreateInfo       multisampling{};
+	VkPipelineDepthStencilStateCreateInfo      depthStencil{};
 	std::vector<VkPipelineColorBlendAttachmentState> colorBlendAttachments;
 
-	VkPipelineDynamicStateCreateInfo           dynamicStateInfo = {};
+	VkPipelineDynamicStateCreateInfo           dynamicStateInfo{};
 	std::vector<VkDynamicState>                dynamicStates;
 
-	VkPipelineViewportStateCreateInfo          viewportStateInfo = {};
-	VkPipelineVertexInputStateCreateInfo       vertexInputInfo = {};
-	VkPipelineColorBlendStateCreateInfo        colorBlendingInfo = {};
+	VkPipelineViewportStateCreateInfo          viewportStateInfo{};
+	VkPipelineVertexInputStateCreateInfo       vertexInputInfo{};
+	VkPipelineColorBlendStateCreateInfo        colorBlendingInfo{};
 
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
 
@@ -38,17 +38,17 @@ struct BaseGraphicsPipelineConfig {
 
 	std::vector<VkDescriptorSetLayout>         setLayouts;
 
-	VkPushConstantRange                        pushConstantRange = {};
+	VkPushConstantRange                        pushConstantRange{};
 };
 
 struct PipelineRes {
 	
-	VkPipeline          pipeline = VK_NULL_HANDLE;
-	VkPipelineLayout    pLayout = VK_NULL_HANDLE;
+	VkPipeline          pipeline{ VK_NULL_HANDLE };
+	VkPipelineLayout    pLayout{ VK_NULL_HANDLE };
 
 	Shader shader;
 	BaseGraphicsPipelineConfig config;
-	PipelineID id = 0;
-	PipelineType type = PipelineType::Uninitialized;
+	PipelineID id{ 0 };
+	PipelineType type{ PipelineType::Uninitialized };
 	const char* name;
 };

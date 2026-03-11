@@ -15,20 +15,20 @@ using Clock = std::chrono::high_resolution_clock;
 using TimePoint = std::chrono::time_point<Clock>;
 
 struct GpuCapabilities {
-	bool supportsSync2;
-	uint32_t apiVersion = 0;
+	bool supportsSync2{};
+	uint32_t apiVersion{ 0 };
 };
 
 struct AvailableDeviceFeatures {
-	bool vulkan11_shaderDrawParameters = false;
-	bool vulkan12_bufferDeviceAddress = false;
-	bool vulkan12_descriptorIndexing = false;
-	bool vulkan12_drawIndirectCount = false;
-	bool vulkan12_scalarBlockLayout = false;
-	bool vulkan13_synchronization2 = false;
+	bool vulkan11_shaderDrawParameters{ false };
+	bool vulkan12_bufferDeviceAddress{ false };
+	bool vulkan12_descriptorIndexing{ false };
+	bool vulkan12_drawIndirectCount{ false };
+	bool vulkan12_scalarBlockLayout{ false };
+	bool vulkan13_synchronization2{ false };
 
-	bool core_samplerAnisotropy = false;
-	bool core_fillModeNonSolid = false;
+	bool core_samplerAnisotropy{ false };
+	bool core_fillModeNonSolid{ false };
 };
 
 enum struct RendererMode {
@@ -47,45 +47,46 @@ public:
 	void cleanup();
 	void update_timing();
 
+	FrameManager frameManager;
+
 private:
 
 	Platform& platform;
 
-	bool isInitalized = { false };
-	bool stopRendering = { false };
+	bool isInitalized{ false };
+	bool stopRendering{ false };
 
-	VmaAllocator vmaAllocator = VK_NULL_HANDLE;
-	VkInstance instance = VK_NULL_HANDLE;
-	VkDebugUtilsMessengerEXT debug_messenger = VK_NULL_HANDLE;
-	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-	VkDevice device = VK_NULL_HANDLE;
-	VkSurfaceKHR surface = VK_NULL_HANDLE;
-	VkQueue graphicsQueue = VK_NULL_HANDLE;
-	uint32_t graphicsQueueFamily = 0;
+	VmaAllocator vmaAllocator{ VK_NULL_HANDLE };
+	VkInstance instance{ VK_NULL_HANDLE };
+	VkDebugUtilsMessengerEXT debug_messenger{ VK_NULL_HANDLE };
+	VkPhysicalDevice physicalDevice{ VK_NULL_HANDLE };
+	VkDevice device{ VK_NULL_HANDLE };
+	VkSurfaceKHR surface{ VK_NULL_HANDLE };
+	VkQueue graphicsQueue{ VK_NULL_HANDLE };
+	uint32_t graphicsQueueFamily{ 0 };
 
 	VulkanSwapchain swapchain;
 
-	AvailableDeviceFeatures enabledFeatures = {};
+	AvailableDeviceFeatures enabledFeatures{};
 
-	uint32_t requestedMajor = 1;
-	uint32_t requestedMinor = 1;
+	uint32_t requestedMajor{ 1 };
+	uint32_t requestedMinor{ 1 };
 
 	TimePoint lastTime;
 	TimePoint currentTime;
-	float deltaTime = 0.0f;
+	float deltaTime{ 0.0f };
 
 	std::vector<const char*> extensions;
 	GpuCapabilities gpuCapability{};
 
-	VkFence immediateFence = {};
-	VkCommandBuffer immediateCommandBuffer = {};
-	VkCommandPool immediateCommandPool = {};
+	VkFence immediateFence{};
+	VkCommandBuffer immediateCommandBuffer{};
+	VkCommandPool immediateCommandPool{};
 	
 
-	FrameManager frameManager;
-	RendererMode rendererMode = {};
+	RendererMode rendererMode{};
 
-	 bool useValidationLayers = true;
+	 bool useValidationLayers{ true };
 
 
 	bool initVulkan();

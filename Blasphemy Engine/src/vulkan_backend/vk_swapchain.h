@@ -20,7 +20,7 @@ private:
 
 	VkSwapchainKHR swapchain = VK_NULL_HANDLE;
 	VkFormat imageFormat = VK_FORMAT_UNDEFINED;
-	VkExtent2D extent = {};
+	VkExtent2D extent{};
 
 	std::vector<VkImage> images;
 	std::vector<VkImageView> views;

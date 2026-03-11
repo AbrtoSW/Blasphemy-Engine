@@ -9,7 +9,7 @@
 
 
 struct DescriptorBundle {
-	std::array<VkDescriptorSet, 4> sets = {};
+	std::array<VkDescriptorSet, 4> sets{};
 	uint32_t presentMask{ 0 };
 
 	uint8_t  dynCountPerSet[4]{ 0,0,0,0 };
@@ -82,7 +82,7 @@ private:
 	std::vector<PoolSizeRatio> ratios;
 	std::vector<VkDescriptorPool> fullPools;
 	std::vector<VkDescriptorPool> readyPools;
-	uint32_t setsPerPool = {};
+	uint32_t setsPerPool{};
 
 };
 

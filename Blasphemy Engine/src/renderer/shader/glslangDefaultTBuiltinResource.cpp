@@ -1,6 +1,6 @@
 #include "renderer/shader/glslangDefaultTBuiltinResource.h"
 
-TBuiltInResource DefaultTBuiltInResource = {
+TBuiltInResource DefaultTBuiltInResource{
 	32,    // maxLights
 	6,     // maxClipPlanes
 	32,    // maxTextureUnits

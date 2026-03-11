@@ -2,7 +2,7 @@
 
 
 VkCommandPoolCreateInfo vkhelper::command_pool_create_info(uint32_t queueFamilyIndex, VkCommandPoolCreateFlags flags /* = 0 */) {
-	VkCommandPoolCreateInfo info = {};
+	VkCommandPoolCreateInfo info{};
 	info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 	info.pNext = nullptr;
 	info.queueFamilyIndex = queueFamilyIndex;
@@ -12,7 +12,7 @@ VkCommandPoolCreateInfo vkhelper::command_pool_create_info(uint32_t queueFamilyI
 
 
 VkCommandBufferAllocateInfo vkhelper::command_buffer_allocate_info(VkCommandPool pool, uint32_t count /* = 1 */) {
-	VkCommandBufferAllocateInfo info = {};
+	VkCommandBufferAllocateInfo info{};
 	info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 	info.pNext = nullptr;
 
@@ -23,7 +23,7 @@ VkCommandBufferAllocateInfo vkhelper::command_buffer_allocate_info(VkCommandPool
 }
 
 VkFenceCreateInfo vkhelper::fence_create_info(VkFenceCreateFlags flags /* = 0 */) {
-	VkFenceCreateInfo info = {};
+	VkFenceCreateInfo info{};
 	info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 	info.pNext = nullptr;
 
@@ -33,7 +33,7 @@ VkFenceCreateInfo vkhelper::fence_create_info(VkFenceCreateFlags flags /* = 0 */
 }
 
 VkSemaphoreCreateInfo vkhelper::semaphore_create_info(VkSemaphoreCreateFlags flags /* = 0 */) {
-	VkSemaphoreCreateInfo info = {};
+	VkSemaphoreCreateInfo info{};
 	info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 	info.pNext = nullptr;
 	info.flags = flags;

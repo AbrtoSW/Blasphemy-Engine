@@ -25,13 +25,13 @@ public:
 
 
 private:
-	SDL_Window* window = nullptr;
-	VkExtent2D windowExtent = { 1920,1080 };
+	SDL_Window* window{ nullptr };
+	VkExtent2D windowExtent{ 1920,1080 };
 
-	float mainScale = 1.0f;
+	float mainScale{ 1.0f };
 
-	bool windowResizeRequest = false;
-	bool quit = false;
+	bool windowResizeRequest{ false };
+	bool quit{ false };
 
 	std::filesystem::path assetsRoot;
 };
