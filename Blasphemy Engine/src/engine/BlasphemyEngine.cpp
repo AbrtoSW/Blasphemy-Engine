@@ -47,30 +47,9 @@ void BlasphemyEngine::run() {
 	}
 
 	if (vkBackend.resizeRequested) {
-		
-		vkDeviceWaitIdle(vkBackend.getDevice());
-		
-		//renderer.resizeFlush / destroyFramebuffers check grotesk
-		
-		vkBackend.destroySwapchain();
-		
-		int width{}, height{};
-		
-		SDL_GetWindowSize(platform.getWindow(), &width, &height);
-
-		if (width == 0 || height == 0) {
-			return;
-		}
-
-		VkExtent2D windowExtent = platform.getWindowExtent();
-		windowExtent = { (std::uint32_t)width, (std::uint32_t)height };
-		// vkBackend.recreateSwapchainResource();
-		// renderer.createOffscreenTargets();
-		// renderer.initFramebuffers();
-		// renderer.initDescriptors();
-
-		vkBackend.resizeRequested = false;
+		resizeWindow();
 	}
+	
 	
 	std::cout << "Engine Exiting main loop.\n";
 
@@ -80,6 +59,7 @@ void BlasphemyEngine::run() {
 
 void BlasphemyEngine::shutdown() {
 
+	renderer.destroyOffscreenTargets();
 	vkBackend.cleanup();
 	platform.shutdown();
 
@@ -93,5 +73,35 @@ void BlasphemyEngine::typeOut(const std::string& s, int delay) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 	}
 	std::cout << "\n";
+
+}
+
+void BlasphemyEngine::resizeWindow() {
+
+
+	vkDeviceWaitIdle(vkBackend.getDevice());
+
+	//renderer.resizeFlush / destroyFramebuffers check grotesk
+	renderer.destroyOffscreenTargets();
+
+	vkBackend.destroySwapchain();
+
+	int width{}, height{};
+
+	SDL_GetWindowSize(platform.getWindow(), &width, &height);
+
+	if (width == 0 || height == 0) {
+		return;
+	}
+
+	VkExtent2D windowExtent = platform.getWindowExtent();
+	windowExtent = { (std::uint32_t)width, (std::uint32_t)height };
+	vkBackend.recreateSwapchainResources();
+	renderer.createOffscreenTargets();
+	// renderer.initFramebuffers();
+	// renderer.initDescriptors();
+
+	vkBackend.resizeRequested = false;
+	
 
 }

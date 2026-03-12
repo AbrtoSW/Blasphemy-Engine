@@ -14,7 +14,10 @@ public:
 	void shutdown();
 
 private:
+	
 	void typeOut(const std::string& s, int delay);
+
+	void resizeWindow();
 
 	std::uint64_t frameNumber{};
 	Platform platform{};

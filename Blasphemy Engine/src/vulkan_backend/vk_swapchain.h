@@ -10,6 +10,9 @@ public:
 
 	inline VkSwapchainKHR getSwapchain() const { return swapchain; }
 	inline VkFormat getFormat() const { return imageFormat; }
+	VkExtent2D getExtent() const { return extent; }
+	uint32_t getImageCount() const { return static_cast<uint32_t>(images.size()); }
+	VkSemaphore getRenderSemaphore(uint32_t imageIndex) const { return renderSemaphores[imageIndex]; }
 
 
 private:
@@ -24,4 +27,5 @@ private:
 
 	std::vector<VkImage> images;
 	std::vector<VkImageView> views;
+	std::vector<VkSemaphore> renderSemaphores;
 };

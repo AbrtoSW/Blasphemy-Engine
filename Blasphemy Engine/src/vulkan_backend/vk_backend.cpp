@@ -58,6 +58,11 @@ void VulkanBackend::cleanup() {
 
 	std::cout << "[Destroy] Swapchain images/views/framebuffers\n";
 	vkSwapchain.destroy(device);
+
+	if (vmaAllocator != VK_NULL_HANDLE) {
+		vmaDestroyAllocator(vmaAllocator);
+		vmaAllocator = VK_NULL_HANDLE;
+	}
 	vkDestroySurfaceKHR(instance, surface, nullptr);
 	vkDestroyDevice(device, nullptr);
 	vkDestroyDebugUtilsMessengerEXT(instance, debug_messenger, nullptr);
@@ -241,10 +246,30 @@ void VulkanBackend::update_timing() {
 }
 
 void VulkanBackend::initSwapchain() {
+
+	VkBool32 res;
+	vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, graphicsQueueFamily, surface, &res);
+	if (res != VK_TRUE) {
+		fprintf(stderr, "Error no WSI support on physical device 0\n");
+		exit(-1);
+	}
+	
 	VkExtent2D e = platform.getWindowExtent();
 	vkSwapchain.create(physicalDevice, device, surface, e.width, e.height);
 
-	//renderer->framebuffer_image_resources
+	if (FRAME_OVERLAP > vkSwapchain.getImageCount()) {
+		std::cout << "Warning !!!! FRAME_OVERLAP is greater than swapchain image count";
+	}
+}
+
+void VulkanBackend::recreateSwapchainResources() {
+
+	VkExtent2D e = platform.getWindowExtent();
+	vkSwapchain.create(physicalDevice, device, surface, e.width, e.height);
+
+	if (FRAME_OVERLAP > vkSwapchain.getImageCount()) {
+		std::cout << "Warning !!!! FRAME_OVERLAP is greater than swapchain image count";
+	}
 }
 
 void VulkanBackend::printAvailableGPUFeatures() {

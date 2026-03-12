@@ -1,4 +1,6 @@
 #include "vulkan_backend/vk_swapchain.h"
+#include "util/vk_helper.h"
+#include "util/vk_util.h"
 #include <algorithm>
 #include <iostream>
 
@@ -74,10 +76,21 @@ bool VulkanSwapchain::create(VkPhysicalDevice physicalDevice, VkDevice device, V
 		}
 	}
 
+	renderSemaphores.resize(imageCount);
+	VkSemaphoreCreateInfo semaphoreCreateInfo = vkhelper::semaphore_create_info();
+	for (uint32_t i = 0; i < imageCount; i++) {
+		VK_CHECK(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &renderSemaphores[i]));
+	}
+
 	return true;
 }
 
 void VulkanSwapchain::destroy(VkDevice device) {
+	for (auto& semaphore : renderSemaphores) {
+		vkDestroySemaphore(device, semaphore, nullptr);
+	}
+	renderSemaphores.clear();
+
 	for (auto& v : views) {
 		vkDestroyImageView(device, v, nullptr);
 	}

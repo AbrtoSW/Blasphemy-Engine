@@ -53,11 +53,16 @@ public:
 
 	// Getters for Renderer / engine
 	VkDevice getDevice() const { return device; }
+	VmaAllocator& getVmaAllocator() { return vmaAllocator; }
+	VmaAllocator getVmaAllocator() const { return vmaAllocator; }
 	VkQueue getGraphicsQueue() const { return graphicsQueue; }
 	VkSwapchainKHR getSwapchainHandle() const { return vkSwapchain.getSwapchain(); }
 	void destroySwapchain() { vkSwapchain.destroy(device); }
+	void recreateSwapchainResources();
+	VkSemaphore getRenderSemaphore(uint32_t imageIndex) const { return vkSwapchain.getRenderSemaphore(imageIndex); }
 	float getDeltaTime() const { return deltaTime; }
 	RendererMode getRendererMode() const { return rendererMode; }
+	VkExtent2D getSwapchainExtent() const { return vkSwapchain.getExtent(); }
 
 	// Window Resize in real time
 	bool resizeRequested{ false };
