@@ -57,7 +57,7 @@ void VulkanBackend::cleanup() {
 
 
 	std::cout << "[Destroy] Swapchain images/views/framebuffers\n";
-	swapchain.destroy(device);
+	vkSwapchain.destroy(device);
 	vkDestroySurfaceKHR(instance, surface, nullptr);
 	vkDestroyDevice(device, nullptr);
 	vkDestroyDebugUtilsMessengerEXT(instance, debug_messenger, nullptr);
@@ -242,7 +242,7 @@ void VulkanBackend::update_timing() {
 
 void VulkanBackend::initSwapchain() {
 	VkExtent2D e = platform.getWindowExtent();
-	swapchain.create(physicalDevice, device, surface, e.width, e.height);
+	vkSwapchain.create(physicalDevice, device, surface, e.width, e.height);
 
 	//renderer->framebuffer_image_resources
 }
@@ -275,4 +275,12 @@ void VulkanBackend::printAvailableGPUFeatures() {
 		<< (enabledFeatures.vulkan13_synchronization2 ? "YES" : "NO") << "\n";
 
 	std::cout << "===========================\n\n";
+}
+
+FrameData& VulkanBackend::getCurrentFrame() {
+	return frameManager.currentFrame();
+}
+
+void VulkanBackend::advanceFrame() {
+	frameManager.nextFrame();
 }

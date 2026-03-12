@@ -47,7 +47,21 @@ public:
 	void cleanup();
 	void update_timing();
 
-	FrameManager frameManager;
+	// Public API for frame pacing
+	FrameData& getCurrentFrame();
+	void advanceFrame();
+
+	// Getters for Renderer / engine
+	VkDevice getDevice() const { return device; }
+	VkQueue getGraphicsQueue() const { return graphicsQueue; }
+	VkSwapchainKHR getSwapchainHandle() const { return vkSwapchain.getSwapchain(); }
+	void destroySwapchain() { vkSwapchain.destroy(device); }
+	float getDeltaTime() const { return deltaTime; }
+	RendererMode getRendererMode() const { return rendererMode; }
+
+	// Window Resize in real time
+	bool resizeRequested{ false };
+
 
 private:
 
@@ -65,7 +79,8 @@ private:
 	VkQueue graphicsQueue{ VK_NULL_HANDLE };
 	uint32_t graphicsQueueFamily{ 0 };
 
-	VulkanSwapchain swapchain;
+	FrameManager frameManager;
+	VulkanSwapchain vkSwapchain;
 
 	AvailableDeviceFeatures enabledFeatures{};
 

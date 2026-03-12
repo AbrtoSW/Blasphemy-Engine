@@ -127,3 +127,4 @@ private:
 	std::vector<VkFramebuffer> framebuffer;
 	std::vector<VkPipelineLayout> pipelineLayouts;
 };
+

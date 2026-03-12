@@ -19,7 +19,7 @@ private:
 	std::uint64_t frameNumber{};
 	Platform platform{};
 	VulkanBackend vkBackend{ platform };
-	Renderer renderer{ vkBackend, vkBackend.frameManager };
+	Renderer renderer{ vkBackend };
 
 };
 

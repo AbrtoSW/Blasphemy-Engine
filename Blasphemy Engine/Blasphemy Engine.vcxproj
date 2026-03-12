@@ -150,6 +150,7 @@
     </ClCompile>
     <ClCompile Include="src\engine\BlasphemyEngine.cpp" />
     <ClCompile Include="src\renderer\descriptors\descriptors.cpp" />
+    <ClCompile Include="src\renderer\renderer.cpp" />
     <ClCompile Include="src\renderer\pipelines\pipeline_builder.cpp" />
     <ClCompile Include="src\renderer\pipelines\pipeline_manager.cpp" />
     <ClCompile Include="src\renderer\shader\glslangDefaultTBuiltinResource.cpp" />

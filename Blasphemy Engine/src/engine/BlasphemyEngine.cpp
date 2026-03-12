@@ -41,9 +41,35 @@ void BlasphemyEngine::run() {
 		//    - record command buffers
 		//    - submit + present
 
-		//renderer.renderFrame();
+		renderer.renderFrame();
 	
 		frameNumber++;
+	}
+
+	if (vkBackend.resizeRequested) {
+		
+		vkDeviceWaitIdle(vkBackend.getDevice());
+		
+		//renderer.resizeFlush / destroyFramebuffers check grotesk
+		
+		vkBackend.destroySwapchain();
+		
+		int width{}, height{};
+		
+		SDL_GetWindowSize(platform.getWindow(), &width, &height);
+
+		if (width == 0 || height == 0) {
+			return;
+		}
+
+		VkExtent2D windowExtent = platform.getWindowExtent();
+		windowExtent = { (std::uint32_t)width, (std::uint32_t)height };
+		// vkBackend.recreateSwapchainResource();
+		// renderer.createOffscreenTargets();
+		// renderer.initFramebuffers();
+		// renderer.initDescriptors();
+
+		vkBackend.resizeRequested = false;
 	}
 	
 	std::cout << "Engine Exiting main loop.\n";
