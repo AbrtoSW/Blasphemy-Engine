@@ -1,4 +1,4 @@
-#include "renderer/shader/glslangDefaultTBuiltinResource.h"
+#include "shader/glslangDefaultTBuiltinResource.h"
 
 TBuiltInResource DefaultTBuiltInResource{
 	32,    // maxLights

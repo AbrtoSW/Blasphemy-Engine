@@ -9,9 +9,12 @@ public:
 	void destroy(VkDevice device);
 
 	inline VkSwapchainKHR getSwapchain() const { return swapchain; }
-	inline VkFormat getFormat() const { return imageFormat; }
+	inline VkFormat getSwapchainImageFormat() const { return imageFormat; }
 	VkExtent2D getExtent() const { return extent; }
-	uint32_t getImageCount() const { return static_cast<uint32_t>(images.size()); }
+	VkImage getSwapchainImage(std::uint32_t index) const { return images[index]; }
+
+	std::uint32_t getSwapchainImageCount() const { return static_cast<std::uint32_t>(images.size()); }
+
 	VkSemaphore getRenderSemaphore(uint32_t imageIndex) const { return renderSemaphores[imageIndex]; }
 
 

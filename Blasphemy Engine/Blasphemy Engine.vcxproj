@@ -149,12 +149,13 @@
       <DisableAnalyzeExternal Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DisableAnalyzeExternal>
     </ClCompile>
     <ClCompile Include="src\engine\BlasphemyEngine.cpp" />
-    <ClCompile Include="src\renderer\descriptors\descriptors.cpp" />
-    <ClCompile Include="src\renderer\pipelines\pipeline_builder.cpp" />
-    <ClCompile Include="src\renderer\pipelines\pipeline_manager.cpp" />
+    <ClCompile Include="src\descriptors\descriptors.cpp" />
+    <ClCompile Include="src\pipelines\pipeline_builder.cpp" />
+    <ClCompile Include="src\pipelines\pipeline_manager.cpp" />
     <ClCompile Include="src\renderer\renderer.cpp" />
-    <ClCompile Include="src\renderer\shader\glslangDefaultTBuiltinResource.cpp" />
-    <ClCompile Include="src\renderer\shader\shader_util.cpp" />
+    <ClCompile Include="src\renderer\renderer_renderpasses.cpp" />
+    <ClCompile Include="src\shader\glslangDefaultTBuiltinResource.cpp" />
+    <ClCompile Include="src\shader\shader_util.cpp" />
     <ClCompile Include="src\util\utility.cpp" />
     <ClCompile Include="src\util\vk_helper.cpp" />
     <ClCompile Include="src\vulkan_backend\vk_backend.cpp" />
@@ -170,14 +171,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\BlasphemyEngine.h" />
-    <ClInclude Include="src\renderer\descriptors\descriptors.h" />
-    <ClInclude Include="src\renderer\pipelines\pipeline_builder.h" />
-    <ClInclude Include="src\renderer\pipelines\pipeline_manager.h" />
-    <ClInclude Include="src\renderer\pipelines\pipeline_types.h" />
+    <ClInclude Include="src\descriptors\descriptors.h" />
+    <ClInclude Include="src\pipelines\pipeline_builder.h" />
+    <ClInclude Include="src\pipelines\pipeline_manager.h" />
+    <ClInclude Include="src\pipelines\pipeline_types.h" />
     <ClInclude Include="src\renderer\renderer.h" />
-    <ClInclude Include="src\renderer\shader\glslangDefaultTBuiltinResource.h" />
-    <ClInclude Include="src\renderer\shader\shader_types.h" />
-    <ClInclude Include="src\renderer\shader\shader_util.h" />
+    <ClInclude Include="src\shader\glslangDefaultTBuiltinResource.h" />
+    <ClInclude Include="src\shader\shader_types.h" />
+    <ClInclude Include="src\shader\shader_util.h" />
     <ClInclude Include="src\util\utility.h" />
     <ClInclude Include="src\vulkan_backend\vk_backend.h" />
     <ClInclude Include="src\vulkan_backend\vk_backend_instance_builder.h" />

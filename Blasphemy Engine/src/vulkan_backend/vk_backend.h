@@ -57,6 +57,8 @@ public:
 	VmaAllocator getVmaAllocator() const { return vmaAllocator; }
 	VkQueue getGraphicsQueue() const { return graphicsQueue; }
 	VkSwapchainKHR getSwapchainHandle() const { return vkSwapchain.getSwapchain(); }
+	VkImage getSwapChainImage(std::uint32_t index) const { return vkSwapchain.getSwapchainImage(index); }
+	VkFormat getSwapChainImageFormat() const { return vkSwapchain.getSwapchainImageFormat(); }
 	void destroySwapchain() { vkSwapchain.destroy(device); }
 	void recreateSwapchainResources();
 	VkSemaphore getRenderSemaphore(uint32_t imageIndex) const { return vkSwapchain.getRenderSemaphore(imageIndex); }

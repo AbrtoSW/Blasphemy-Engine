@@ -78,7 +78,7 @@ bool VulkanSwapchain::create(VkPhysicalDevice physicalDevice, VkDevice device, V
 
 	renderSemaphores.resize(imageCount);
 	VkSemaphoreCreateInfo semaphoreCreateInfo = vkhelper::semaphore_create_info();
-	for (uint32_t i = 0; i < imageCount; i++) {
+	for (size_t i = 0; i < imageCount; i++) {
 		VK_CHECK(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &renderSemaphores[i]));
 	}
 

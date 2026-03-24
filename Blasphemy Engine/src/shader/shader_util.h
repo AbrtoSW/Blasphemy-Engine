@@ -1,7 +1,7 @@
 #pragma once
 #include <filesystem>
 #include <glslang/Public/ShaderLang.h>
-#include "renderer/shader/glslangDefaultTBuiltinResource.h"
+#include "shader/glslangDefaultTBuiltinResource.h"
 #include "volk/volk.h"
 #include "util/utility.h"
 

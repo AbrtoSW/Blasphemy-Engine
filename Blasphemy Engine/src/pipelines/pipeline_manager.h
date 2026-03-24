@@ -1,7 +1,7 @@
 #pragma once
 
-#include "renderer/pipelines/pipeline_types.h"
-#include "renderer/shader/shader_types.h"
+#include "pipelines/pipeline_types.h"
+#include "shader/shader_types.h"
 
 #include <unordered_set>
 #include <unordered_map>

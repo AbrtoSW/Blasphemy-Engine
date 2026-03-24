@@ -57,22 +57,28 @@
     <ClCompile Include="external\volk\volk.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer\descriptors\descriptors.cpp">
+    <ClCompile Include="src\descriptors\descriptors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer\pipelines\pipeline_builder.cpp">
+    <ClCompile Include="src\pipelines\pipeline_builder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer\shader\shader_util.cpp">
+    <ClCompile Include="src\shader\shader_util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer\pipelines\pipeline_manager.cpp">
+    <ClCompile Include="src\pipelines\pipeline_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\util\utility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer\shader\glslangDefaultTBuiltinResource.cpp">
+    <ClCompile Include="src\shader\glslangDefaultTBuiltinResource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\renderer_renderpasses.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -107,28 +113,28 @@
     <ClInclude Include="src\renderer\renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\descriptors\descriptors.h">
+    <ClInclude Include="src\descriptors\descriptors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\pipelines\pipeline_builder.h">
+    <ClInclude Include="src\pipelines\pipeline_builder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\pipelines\pipeline_types.h">
+    <ClInclude Include="src\pipelines\pipeline_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\shader\shader_types.h">
+    <ClInclude Include="src\shader\shader_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\shader\shader_util.h">
+    <ClInclude Include="src\shader\shader_util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\pipelines\pipeline_manager.h">
+    <ClInclude Include="src\pipelines\pipeline_manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\util\utility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\shader\glslangDefaultTBuiltinResource.h">
+    <ClInclude Include="src\shader\glslangDefaultTBuiltinResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

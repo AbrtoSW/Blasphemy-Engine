@@ -2,6 +2,7 @@
 #include "vulkan_backend/vk_backend.h"
 #include "util/vk_helper.h"
 #include "util/vk_util.h"
+#include <array>
 
 void Renderer::renderFrame() {
 
@@ -31,7 +32,14 @@ void Renderer::renderFrame() {
 
 	VK_CHECK(vkBeginCommandBuffer(cmd, &cmdBeginInfo));
 
-	//render graph goes here
+	//render graph goes here will be implemented soon
+
+	vkhelper::transition_image(cmd, drawImage.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+	vkhelper::transition_image(cmd, drawImage.image, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	vkhelper::transition_image(cmd, vkBackend.getSwapChainImage(swapchainImageIndex), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+
+
+
 
 	VK_CHECK(vkEndCommandBuffer(cmd));
 
@@ -54,10 +62,9 @@ void Renderer::createOffscreenTargets() {
 	rimg_allocinfo.requiredFlags = VkMemoryPropertyFlags(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
 	VkImageUsageFlags drawImageUsages{};
-	drawImageUsages |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
-	drawImageUsages |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 	drawImageUsages |= VK_IMAGE_USAGE_STORAGE_BIT;
 	drawImageUsages |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+	drawImageUsages |= VK_IMAGE_USAGE_SAMPLED_BIT;
 
 	VkImageCreateInfo rimg_info = vkhelper::image_create_info(drawImage.imageFormat, drawImageUsages, drawImageExtent);
 
@@ -84,6 +91,8 @@ void Renderer::createOffscreenTargets() {
 }
 
 void Renderer::destroyOffscreenTargets() {
-	mainDeletionQueue.flushResize(vkBackend.getDevice(), vkBackend.getVmaAllocator());
+	rendererDeletionQueue.flushResize(vkBackend.getDevice(), vkBackend.getVmaAllocator());
 }
+
+
 

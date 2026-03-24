@@ -257,7 +257,7 @@ void VulkanBackend::initSwapchain() {
 	VkExtent2D e = platform.getWindowExtent();
 	vkSwapchain.create(physicalDevice, device, surface, e.width, e.height);
 
-	if (FRAME_OVERLAP > vkSwapchain.getImageCount()) {
+	if (FRAME_OVERLAP > vkSwapchain.getSwapchainImageCount()) {
 		std::cout << "Warning !!!! FRAME_OVERLAP is greater than swapchain image count";
 	}
 }
@@ -267,7 +267,7 @@ void VulkanBackend::recreateSwapchainResources() {
 	VkExtent2D e = platform.getWindowExtent();
 	vkSwapchain.create(physicalDevice, device, surface, e.width, e.height);
 
-	if (FRAME_OVERLAP > vkSwapchain.getImageCount()) {
+	if (FRAME_OVERLAP > vkSwapchain.getSwapchainImageCount()) {
 		std::cout << "Warning !!!! FRAME_OVERLAP is greater than swapchain image count";
 	}
 }

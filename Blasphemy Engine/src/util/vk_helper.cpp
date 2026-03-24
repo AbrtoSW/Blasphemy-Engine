@@ -105,3 +105,73 @@ VkCommandBufferBeginInfo vkhelper::command_buffer_begin_info(VkCommandBufferUsag
 	info.flags = flags;
 	return info;
 }
+
+VkImageSubresourceRange vkhelper::image_subresource_range(VkImageAspectFlags aspectMask)
+{
+	VkImageSubresourceRange subImage{};
+	subImage.aspectMask = aspectMask;
+	subImage.baseMipLevel = 0;
+	subImage.levelCount = VK_REMAINING_MIP_LEVELS;
+	subImage.baseArrayLayer = 0;
+	subImage.layerCount = VK_REMAINING_ARRAY_LAYERS;
+
+	return subImage;
+}
+
+void vkhelper::transition_image(VkCommandBuffer cmd, VkImage image, VkImageLayout currentLayout, VkImageLayout newLayout) {
+	VkImageMemoryBarrier barrier{};
+	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+	barrier.pNext = nullptr;
+
+	barrier.srcAccessMask = VK_ACCESS_MEMORY_WRITE_BIT;
+	barrier.dstAccessMask = VK_ACCESS_MEMORY_WRITE_BIT | VK_ACCESS_MEMORY_READ_BIT;
+
+	barrier.oldLayout = currentLayout;
+	barrier.newLayout = newLayout;
+
+	VkImageAspectFlags aspectMask = (newLayout == VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL) ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
+	barrier.subresourceRange = vkhelper::image_subresource_range(aspectMask);
+	barrier.image = image;
+
+	vkCmdPipelineBarrier(cmd,
+		VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
+		VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
+		0,
+		0, nullptr,
+		0, nullptr,
+		1, &barrier);
+}
+
+void vkhelper::transition_image(VkCommandBuffer cmd, VkImage image, VkImageLayout currentLayout, VkImageLayout newLayout, const VkImageSubresourceRange& range) {
+	VkImageMemoryBarrier barrier{};
+	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+	barrier.pNext = nullptr;
+
+	barrier.srcAccessMask = VK_ACCESS_MEMORY_WRITE_BIT;
+	barrier.dstAccessMask = VK_ACCESS_MEMORY_WRITE_BIT | VK_ACCESS_MEMORY_READ_BIT;
+
+	barrier.oldLayout = currentLayout;
+	barrier.newLayout = newLayout;
+	barrier.image = image;
+	barrier.subresourceRange = range;
+
+	vkCmdPipelineBarrier(cmd,
+		VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
+		VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
+		0,
+		0, nullptr,
+		0, nullptr,
+		1, &barrier);
+}
+
+void vkhelper::transition_image(VkCommandBuffer cmd, VkImage image, VkImageLayout currentLayout, VkImageLayout newLayout, VkImageAspectFlags aspect, uint32_t baseMip, uint32_t levelCount, uint32_t baseLayer, uint32_t layerCount)
+{
+	VkImageSubresourceRange r = {};
+	r.aspectMask = aspect;
+	r.baseMipLevel = baseMip;
+	r.levelCount = levelCount;
+	r.baseArrayLayer = baseLayer;
+	r.layerCount = layerCount;
+
+	vkhelper::transition_image(cmd, image, currentLayout, newLayout, r);
+}

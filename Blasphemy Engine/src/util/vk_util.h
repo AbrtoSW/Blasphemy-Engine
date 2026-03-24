@@ -34,10 +34,13 @@ public:
 	inline void pushImage(const AllocatedImage& image) { allocatedImages.push_back(image); }
 	inline void pushOffscreenImage(const AllocatedImage& image) { offscreenImages.push_back(image); }
 
+	inline void pushRenderPass(const VkRenderPass& renderPass) { renderPasses.push_back(renderPass); }
+
 private:
 	std::vector<AllocatedBuffer> vmaFrameAllocatedBuffer;
 	std::vector<AllocatedBuffer> vmaAllocatedBuffer;
 	std::vector<AllocatedImage> offscreenImages;
 	std::vector<AllocatedImage> allocatedImages;
+	std::vector<VkRenderPass> renderPasses;
 };
 

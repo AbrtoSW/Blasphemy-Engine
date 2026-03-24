@@ -1,4 +1,4 @@
-#include "renderer/shader/shader_util.h"
+#include "shader/shader_util.h"
 #include "util/vk_util.h"
 
 #include <glslang/SPIRV/GlslangToSpv.h>

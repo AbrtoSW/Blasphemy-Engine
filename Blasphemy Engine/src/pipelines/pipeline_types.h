@@ -1,6 +1,6 @@
 #pragma once
 #include "volk/volk.h"
-#include "renderer/shader/shader_types.h"
+#include "shader/shader_types.h"
 #include <vector>
 
 using PipelineID = uint32_t;

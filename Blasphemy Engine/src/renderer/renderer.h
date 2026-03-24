@@ -16,7 +16,10 @@ public:
 
 	void destroyOffscreenTargets();
 
+	void create_draw_image_renderpass();
 
+
+	void create_swapchain_renderpass();
 private:
 
 	VulkanBackend& vkBackend;
@@ -26,7 +29,10 @@ private:
 	AllocatedImage drawImage{};
 	AllocatedImage depthImage{};
 
-	DeletionQueue mainDeletionQueue;
+	VkRenderPass drawImageRenderPass;
+	VkRenderPass swapchainRenderPass;
+
+	DeletionQueue rendererDeletionQueue;
 	
 	
 	void initDescriptors();

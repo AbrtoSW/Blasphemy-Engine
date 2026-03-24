@@ -1,4 +1,4 @@
-#include "renderer/descriptors/descriptors.h"
+#include "descriptors/descriptors.h"
 #include "util/vk_util.h"
 #include <iostream>
 

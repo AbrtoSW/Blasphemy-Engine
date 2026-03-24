@@ -1,5 +1,5 @@
-#include "renderer/pipelines/pipeline_manager.h"
-#include "renderer/shader/shader_util.h"
+#include "pipelines/pipeline_manager.h"
+#include "shader/shader_util.h"
 #include <set>
 #include <iostream>
 
