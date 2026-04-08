@@ -81,6 +81,9 @@
     <ClCompile Include="src\renderer\renderer_renderpasses.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\renderer\renderer_framebuffers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\platform\platform.h">

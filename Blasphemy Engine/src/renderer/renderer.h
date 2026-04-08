@@ -1,6 +1,7 @@
 #pragma once
 #include "types/vk_types.h"
 #include "util/vk_util.h"
+#include <vector>
 
 class VulkanBackend;
 
@@ -15,11 +16,8 @@ public:
 	void createOffscreenTargets();
 
 	void destroyOffscreenTargets();
+	void cleanup();
 
-	void create_draw_image_renderpass();
-
-
-	void create_swapchain_renderpass();
 private:
 
 	VulkanBackend& vkBackend;
@@ -29,18 +27,23 @@ private:
 	AllocatedImage drawImage{};
 	AllocatedImage depthImage{};
 
-	VkRenderPass drawImageRenderPass;
-	VkRenderPass swapchainRenderPass;
+	VkRenderPass drawImageRenderPass{};
+	VkRenderPass swapchainRenderPass{};
 
-	DeletionQueue rendererDeletionQueue;
+	std::vector<VkFramebuffer> swapchainFrameBuffers{};
+	VkFramebuffer drawImageFrameBuffer{};
+
+	DeletionQueue rendererDeletionQueue{};
+
+
 	
 	
 	void initDescriptors();
 
 
+	void create_draw_image_renderpass();
+	void create_swapchain_renderpass();
 	
-
-
-
-
+	void create_swapchain_framebuffer();
+	void create_draw_image_framebuffer();
 };

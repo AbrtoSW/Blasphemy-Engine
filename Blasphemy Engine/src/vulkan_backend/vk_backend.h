@@ -69,7 +69,8 @@ public:
 	// Window Resize in real time
 	bool resizeRequested{ false };
 
-
+	std::uint32_t getSwapchainImageCount() const { return vkSwapchain.getSwapchainImageCount(); }
+	VkImageView getSwapchainImageView(std::uint32_t index) const { return vkSwapchain.getSwapchainImageView(index); }
 private:
 
 	Platform& platform;

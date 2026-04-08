@@ -2,7 +2,8 @@
 #include "vulkan_backend/vk_backend.h"
 #include "util/vk_helper.h"
 #include "util/vk_util.h"
-#include <array>
+
+
 
 void Renderer::renderFrame() {
 
@@ -73,6 +74,7 @@ void Renderer::createOffscreenTargets() {
 	VkImageViewCreateInfo rview_info = vkhelper::imageview_create_info(drawImage.imageFormat, drawImage.image, VK_IMAGE_ASPECT_COLOR_BIT);
 
 	VK_CHECK(vkCreateImageView(vkBackend.getDevice(), &rview_info, nullptr, &drawImage.imageView));
+	rendererDeletionQueue.pushOffscreenImage(drawImage);
 
 
 	depthImage.imageFormat = VK_FORMAT_D32_SFLOAT;
@@ -87,11 +89,28 @@ void Renderer::createOffscreenTargets() {
 
 
 	VK_CHECK(vkCreateImageView(vkBackend.getDevice(), &dview_info, nullptr, &depthImage.imageView));
+	rendererDeletionQueue.pushOffscreenImage(depthImage);
+
+	create_draw_image_renderpass();
+	create_swapchain_renderpass();
+	create_draw_image_framebuffer();
+	create_swapchain_framebuffer();
 
 }
 
 void Renderer::destroyOffscreenTargets() {
 	rendererDeletionQueue.flushResize(vkBackend.getDevice(), vkBackend.getVmaAllocator());
+	drawImage = {};
+	depthImage = {};
+	drawImageRenderPass = VK_NULL_HANDLE;
+	swapchainRenderPass = VK_NULL_HANDLE;
+	drawImageFrameBuffer = VK_NULL_HANDLE;
+	swapchainFrameBuffers.clear();
+}
+
+void Renderer::cleanup() {
+	destroyOffscreenTargets();
+	rendererDeletionQueue.flushMainResources(vkBackend.getDevice(), vkBackend.getVmaAllocator());
 }
 
 

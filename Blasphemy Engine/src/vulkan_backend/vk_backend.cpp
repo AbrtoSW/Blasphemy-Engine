@@ -272,6 +272,7 @@ void VulkanBackend::recreateSwapchainResources() {
 	}
 }
 
+
 void VulkanBackend::printAvailableGPUFeatures() {
 	std::cout << "\n=== GPU FEATURE REPORT ===\n";
 

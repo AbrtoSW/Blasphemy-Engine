@@ -21,6 +21,8 @@ bool BlasphemyEngine::init() {
 		return false;
 	}
 
+	renderer.createOffscreenTargets();
+
 	return true;
 }
 
@@ -59,7 +61,7 @@ void BlasphemyEngine::run() {
 
 void BlasphemyEngine::shutdown() {
 
-	renderer.destroyOffscreenTargets();
+	renderer.cleanup();
 	vkBackend.cleanup();
 	platform.shutdown();
 

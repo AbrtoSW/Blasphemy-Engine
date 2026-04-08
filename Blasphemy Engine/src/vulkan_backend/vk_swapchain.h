@@ -12,8 +12,11 @@ public:
 	inline VkFormat getSwapchainImageFormat() const { return imageFormat; }
 	VkExtent2D getExtent() const { return extent; }
 	VkImage getSwapchainImage(std::uint32_t index) const { return images[index]; }
-
+	VkImageView getSwapchainImageView(std::uint32_t index) const { return views[index]; }
+	
 	std::uint32_t getSwapchainImageCount() const { return static_cast<std::uint32_t>(images.size()); }
+
+
 
 	VkSemaphore getRenderSemaphore(uint32_t imageIndex) const { return renderSemaphores[imageIndex]; }
 
