@@ -45,9 +45,11 @@ InstanceBuildResult VulkanInstanceBuilder::create(bool enableValidation, VkInsta
 	uint32_t reqMajor = 1;
 	uint32_t reqMinor = 1;
 
+	std::cout << "[VulkanInstanceBuilder] createInstance...\n" << std::flush;
 	if (!createInstance(instance, reqMajor, reqMinor))
 		return r;
 
+	std::cout << "[VulkanInstanceBuilder] createDebugMessenger...\n" << std::flush;
 	if (validation && !createDebugMessenger(instance, debugMessenger))
 		return r;
 
@@ -93,6 +95,7 @@ bool VulkanInstanceBuilder::createInstance(VkInstance& instance, uint32_t reqMaj
 			VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
 			VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 		debugInfo.pfnUserCallback = debugCallback;
+		debugInfo.pNext = nullptr;
 	}
 
 	VkValidationFeatureEnableEXT enables[] = {
@@ -105,7 +108,9 @@ bool VulkanInstanceBuilder::createInstance(VkInstance& instance, uint32_t reqMaj
 		validationFeatures.sType = VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT;
 		validationFeatures.enabledValidationFeatureCount = 2;
 		validationFeatures.pEnabledValidationFeatures = enables;
-		validationFeatures.pNext = nullptr;
+		// Chain debug messenger create-info so validation messages are captured
+		// during vkCreateInstance (before we can call vkCreateDebugUtilsMessengerEXT).
+		validationFeatures.pNext = &debugInfo;
 	}
 
 	VkInstanceCreateInfo info{};
@@ -140,11 +145,13 @@ bool VulkanInstanceBuilder::createDebugMessenger(VkInstance& instance, VkDebugUt
 		VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 	info.pfnUserCallback = debugCallback;
 
+	std::cout << "[VulkanInstanceBuilder] vkGetInstanceProcAddr(vkCreateDebugUtilsMessengerEXT)...\n" << std::flush;
 	auto func = (PFN_vkCreateDebugUtilsMessengerEXT)
 		vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
 
 	if (!func) return false;
 
+	std::cout << "[VulkanInstanceBuilder] calling vkCreateDebugUtilsMessengerEXT...\n" << std::flush;
 	VkResult r = func(instance, &info, nullptr, &debugMessenger);
 	if (r == VK_SUCCESS) {
 		std::cout << "Vulkan Debug: ENABLED\n";

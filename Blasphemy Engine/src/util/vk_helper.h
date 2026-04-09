@@ -18,6 +18,10 @@ namespace vkhelper {
 	VkCommandBufferSubmitInfo command_buffer_submit_info(VkCommandBuffer cmd);
 	VkSubmitInfo2 submit_info(VkCommandBufferSubmitInfo* cmd, VkSemaphoreSubmitInfo* signalSemaphoreInfo, VkSemaphoreSubmitInfo* waitSemaphoreInfo);
 	VkSemaphoreSubmitInfo semaphore_submit_info(VkPipelineStageFlags2 stageMask, VkSemaphore semaphore);
+
+	// Classic (non-sync2) submit helpers.
+	// NOTE: returned VkSubmitInfo stores pointers; caller must keep the pointed-to values alive until submission.
+	VkSubmitInfo submit_info(VkCommandBuffer* cmd, VkSemaphore* signalSemaphore, VkSemaphore* waitSemaphore, VkPipelineStageFlags* waitDstStageMask);
 	VkImageSubresourceRange image_subresource_range(VkImageAspectFlags aspectMask);
 
 

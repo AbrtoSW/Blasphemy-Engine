@@ -11,7 +11,7 @@ public:
 
 	Renderer(VulkanBackend& vulkanBackend) : vkBackend(vulkanBackend){};
 
-	void initRenderer();
+	bool initRenderer();
 	
 	void renderFrame();
 

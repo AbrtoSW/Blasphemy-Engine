@@ -201,18 +201,6 @@ VkSemaphoreSubmitInfo vkhelper::semaphore_submit_info(VkPipelineStageFlags2 stag
 	return submitInfo;
 }
 
-
-VkCommandBufferSubmitInfo vkhelper::command_buffer_submit_info(VkCommandBuffer cmd)
-{
-	VkCommandBufferSubmitInfo info{};
-	info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_SUBMIT_INFO;
-	info.pNext = nullptr;
-	info.commandBuffer = cmd;
-	info.deviceMask = 0;
-
-	return info;
-}
-
 VkSubmitInfo2 vkhelper::submit_info(VkCommandBufferSubmitInfo* cmd, VkSemaphoreSubmitInfo* signalSemaphoreInfo,
 	VkSemaphoreSubmitInfo* waitSemaphoreInfo)
 {
@@ -228,6 +216,28 @@ VkSubmitInfo2 vkhelper::submit_info(VkCommandBufferSubmitInfo* cmd, VkSemaphoreS
 
 	info.commandBufferInfoCount = 1;
 	info.pCommandBufferInfos = cmd;
+
+	return info;
+}
+
+VkSubmitInfo vkhelper::submit_info(VkCommandBuffer* cmd,
+	VkSemaphore* signalSemaphore,
+	VkSemaphore* waitSemaphore,
+	VkPipelineStageFlags* waitDstStageMask)
+{
+	VkSubmitInfo info{};
+	info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	info.pNext = nullptr;
+
+	info.waitSemaphoreCount = waitSemaphore == nullptr ? 0u : 1u;
+	info.pWaitSemaphores = waitSemaphore;
+	info.pWaitDstStageMask = waitDstStageMask;
+
+	info.commandBufferCount = cmd == nullptr ? 0u : 1u;
+	info.pCommandBuffers = cmd;
+
+	info.signalSemaphoreCount = signalSemaphore == nullptr ? 0u : 1u;
+	info.pSignalSemaphores = signalSemaphore;
 
 	return info;
 }

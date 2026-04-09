@@ -1,6 +1,7 @@
 #include "renderer/renderer.h"
 #include "vulkan_backend/vk_backend.h"
 #include <array>
+#include <iostream>
 
 
 
@@ -42,6 +43,8 @@ void Renderer::createDrawImageFramebuffer() {
 }
 
 void Renderer::createFramebuffers() {
+	std::cout << "[Renderer] create framebuffers...\n" << std::flush;
+
 	createSwapchainFramebuffer();
 	createDrawImageFramebuffer();
 }

@@ -104,13 +104,17 @@ bool VulkanBackend::initVulkan() {
 
 	printAvailableGPUFeatures();
 
-	createVMAAllocator();
+	if (!createVMAAllocator())
+		return false;
 
-	initSwapchain();
+	if (!initSwapchain())
+		return false;
 	
-	initCommandPools();
+	if (!initCommandPools())
+		return false;
 
-	initFrameSyncObjects();
+	if (!initFrameSyncObjects())
+		return false;
 
 	return true;
 }
@@ -210,17 +214,19 @@ bool VulkanBackend::createVMAAllocator() {
 	funcs.vkCmdCopyBuffer = vkCmdCopyBuffer;
 
 #if VMA_DEDICATED_ALLOCATION || VMA_VULKAN_VERSION >= 1001000
-	funcs.vkGetBufferMemoryRequirements2KHR = vkGetBufferMemoryRequirements2KHR;
-	funcs.vkGetImageMemoryRequirements2KHR = vkGetImageMemoryRequirements2KHR;
+	// VMA uses the *KHR fields for both core 1.1+ and KHR extension entry points.
+	// Prefer core 1.1 symbols (loaded by Volk) and fall back to KHR if needed.
+	funcs.vkGetBufferMemoryRequirements2KHR = vkGetBufferMemoryRequirements2 ? vkGetBufferMemoryRequirements2 : vkGetBufferMemoryRequirements2KHR;
+	funcs.vkGetImageMemoryRequirements2KHR = vkGetImageMemoryRequirements2 ? vkGetImageMemoryRequirements2 : vkGetImageMemoryRequirements2KHR;
 #endif
 
 #if VMA_BIND_MEMORY2 || VMA_VULKAN_VERSION >= 1001000
-	funcs.vkBindBufferMemory2KHR = vkBindBufferMemory2KHR;
-	funcs.vkBindImageMemory2KHR = vkBindImageMemory2KHR;
+	funcs.vkBindBufferMemory2KHR = vkBindBufferMemory2 ? vkBindBufferMemory2 : vkBindBufferMemory2KHR;
+	funcs.vkBindImageMemory2KHR = vkBindImageMemory2 ? vkBindImageMemory2 : vkBindImageMemory2KHR;
 #endif
 
 #if VMA_MEMORY_BUDGET || VMA_VULKAN_VERSION >= 1001000
-	funcs.vkGetPhysicalDeviceMemoryProperties2KHR = vkGetPhysicalDeviceMemoryProperties2KHR;
+	funcs.vkGetPhysicalDeviceMemoryProperties2KHR = vkGetPhysicalDeviceMemoryProperties2 ? vkGetPhysicalDeviceMemoryProperties2 : vkGetPhysicalDeviceMemoryProperties2KHR;
 #endif
 
 	VmaAllocatorCreateInfo info{};
@@ -245,31 +251,35 @@ void VulkanBackend::update_timing() {
 	lastTime = currentTime;
 }
 
-void VulkanBackend::initSwapchain() {
+bool VulkanBackend::initSwapchain() {
 
 	VkBool32 res;
 	vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, graphicsQueueFamily, surface, &res);
 	if (res != VK_TRUE) {
 		fprintf(stderr, "Error no WSI support on physical device 0\n");
-		exit(-1);
+		return false;
 	}
 	
 	VkExtent2D e = platform.getWindowExtent();
-	vkSwapchain.create(physicalDevice, device, surface, e.width, e.height);
+	if (!vkSwapchain.create(physicalDevice, device, surface, e.width, e.height))
+		return false;
 
 	if (FRAME_OVERLAP > vkSwapchain.getSwapchainImageCount()) {
 		std::cout << "Warning !!!! FRAME_OVERLAP is greater than swapchain image count";
 	}
+	return true;
 }
 
-void VulkanBackend::recreateSwapchainResources() {
+bool VulkanBackend::recreateSwapchainResources() {
 
 	VkExtent2D e = platform.getWindowExtent();
-	vkSwapchain.create(physicalDevice, device, surface, e.width, e.height);
+	if (!vkSwapchain.create(physicalDevice, device, surface, e.width, e.height))
+		return false;
 
 	if (FRAME_OVERLAP > vkSwapchain.getSwapchainImageCount()) {
 		std::cout << "Warning !!!! FRAME_OVERLAP is greater than swapchain image count";
 	}
+	return true;
 }
 
 

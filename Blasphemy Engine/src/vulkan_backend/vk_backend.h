@@ -60,7 +60,7 @@ public:
 	VkImage getSwapChainImage(std::uint32_t index) const { return vkSwapchain.getSwapchainImage(index); }
 	VkFormat getSwapChainImageFormat() const { return vkSwapchain.getSwapchainImageFormat(); }
 	void destroySwapchain() { vkSwapchain.destroy(device); }
-	void recreateSwapchainResources();
+	bool recreateSwapchainResources();
 	VkSemaphore getRenderSemaphore(uint32_t imageIndex) const { return vkSwapchain.getRenderSemaphore(imageIndex); }
 	float getDeltaTime() const { return deltaTime; }
 	RendererMode getRendererMode() const { return rendererMode; }
@@ -118,7 +118,7 @@ private:
 
 	bool createVMAAllocator();
 
-	void initSwapchain();
+	bool initSwapchain();
 	bool createSurface();
 	bool pickPhysicalDevice();
 	bool checkDeviceExtensionSupport(VkPhysicalDevice device);

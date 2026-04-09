@@ -1,7 +1,7 @@
 #include "renderer/renderer.h"
 #include "vulkan_backend/vk_backend.h"
 
-
+#include <iostream>
 #include <array>
 
 void Renderer::createDrawImageRenderpass() {
@@ -69,7 +69,7 @@ void Renderer::createDrawImageRenderpass() {
 
 	VK_CHECK(vkCreateRenderPass(vkBackend.getDevice(), &renderPassInfo, nullptr, &drawImageRenderPass));
 
-	//fix this
+	
 }
 
 void Renderer::createSwapchainRenderpass() {
@@ -188,6 +188,7 @@ void Renderer::initSwapchainRenderpass(VkCommandBuffer cmd, uint32_t imageIndex)
 }
 
 void Renderer::createRenderpasses() {
+	std::cout << "[Renderer] create renderpasses...\n" << std::flush;
 	createDrawImageRenderpass();
 	createSwapchainRenderpass();
 }

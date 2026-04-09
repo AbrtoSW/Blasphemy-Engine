@@ -2,13 +2,17 @@
 #include "vulkan_backend/vk_backend.h"
 #include "util/vk_helper.h"
 #include "util/vk_util.h"
+#include <iostream>
 
-void Renderer::initRenderer() {
 
+bool Renderer::initRenderer() {
+
+	createOffscreenTargets();
 	createRenderpasses();
 	createFramebuffers();
 	//initDescriptors();
 
+	return true;
 }
 
 void Renderer::renderFrame() {
@@ -52,20 +56,18 @@ void Renderer::renderFrame() {
 
 
 
-	VkCommandBufferSubmitInfo cmdinfo = vkhelper::command_buffer_submit_info(cmd);
+	VkPipelineStageFlags waitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	
+	VkSubmitInfo submit = vkhelper::submit_info(&cmd, &currentRenderSemaphore, &frame.swapchainSemaphore, &waitStage);
 
-	VkSemaphoreSubmitInfo waitInfo = vkhelper::semaphore_submit_info(VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT_KHR, frame.swapchainSemaphore);
-	VkSemaphoreSubmitInfo signalInfo = vkhelper::semaphore_submit_info(VK_PIPELINE_STAGE_2_ALL_GRAPHICS_BIT, currentRenderSemaphore);
-
-	VkSubmitInfo2 submit = vkhelper::submit_info(&cmdinfo, &signalInfo, &waitInfo);
-
-	VK_CHECK(vkQueueSubmit2(engine.graphicsQueue, 1, &submit, frame.renderFence));
+	VK_CHECK(vkQueueSubmit(vkBackend.getGraphicsQueue(), 1, &submit, frame.renderFence));
 
 	// as its necessary that drawing commands have finished before the image is displayed to the user
 	VkPresentInfoKHR presentInfo = {};
 	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 	presentInfo.pNext = nullptr;
-	presentInfo.pSwapchains = &vkBackend.getSwapchainHandle();
+	VkSwapchainKHR swapchain = vkBackend.getSwapchainHandle();
+	presentInfo.pSwapchains = &swapchain;
 	presentInfo.swapchainCount = 1;
 
 	presentInfo.pWaitSemaphores = &currentRenderSemaphore;
@@ -80,12 +82,12 @@ void Renderer::renderFrame() {
 	}
 
 	//increase the number of frames drawn
-	engine.frameNumber++;
-
-
+	vkBackend.advanceFrame();
 }
 
 void Renderer::createOffscreenTargets() {
+
+	std::cout << "[Renderer] createOffscreenTargets begin\n" << std::flush;
 
 	VkExtent3D drawImageExtent = {
 	vkBackend.getSwapchainExtent().width,
@@ -107,10 +109,12 @@ void Renderer::createOffscreenTargets() {
 
 	VkImageCreateInfo rimg_info = vkhelper::image_create_info(drawImage.imageFormat, drawImageUsages, drawImageExtent);
 
-	vmaCreateImage(vkBackend.getVmaAllocator(), &rimg_info, &rimg_allocinfo, &drawImage.image, &drawImage.allocation, nullptr);
+	std::cout << "[Renderer] vmaCreateImage drawImage...\n" << std::flush;
+	VK_CHECK(vmaCreateImage(vkBackend.getVmaAllocator(), &rimg_info, &rimg_allocinfo, &drawImage.image, &drawImage.allocation, nullptr));
 
 	VkImageViewCreateInfo rview_info = vkhelper::imageview_create_info(drawImage.imageFormat, drawImage.image, VK_IMAGE_ASPECT_COLOR_BIT);
 
+	std::cout << "[Renderer] vkCreateImageView drawImage...\n" << std::flush;
 	VK_CHECK(vkCreateImageView(vkBackend.getDevice(), &rview_info, nullptr, &drawImage.imageView));
 	rendererDeletionQueue.pushOffscreenImage(drawImage);
 
@@ -121,19 +125,19 @@ void Renderer::createOffscreenTargets() {
 	depthImageUsages |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 
 	VkImageCreateInfo dimg_info = vkhelper::image_create_info(depthImage.imageFormat, depthImageUsages, drawImageExtent);
-	vmaCreateImage(vkBackend.getVmaAllocator(), &dimg_info, &rimg_allocinfo, &depthImage.image, &depthImage.allocation, nullptr);
+	std::cout << "[Renderer] vmaCreateImage depthImage...\n" << std::flush;
+	VK_CHECK(vmaCreateImage(vkBackend.getVmaAllocator(), &dimg_info, &rimg_allocinfo, &depthImage.image, &depthImage.allocation, nullptr));
 
 	VkImageViewCreateInfo dview_info = vkhelper::imageview_create_info(depthImage.imageFormat, depthImage.image, VK_IMAGE_ASPECT_DEPTH_BIT);
 
 
+	std::cout << "[Renderer] vkCreateImageView depthImage...\n" << std::flush;
 	VK_CHECK(vkCreateImageView(vkBackend.getDevice(), &dview_info, nullptr, &depthImage.imageView));
+	
+	//might change deletion here
 	rendererDeletionQueue.pushOffscreenImage(depthImage);
 
-	createDrawImageRenderpass();
-	createSwapchainRenderpass();
-	createDrawImageFramebuffer();
-	createSwapchainFramebuffer();
-
+	std::cout << "[Renderer] createOffscreenTargets end\n" << std::flush;
 }
 
 void Renderer::destroyOffscreenTargets() {
