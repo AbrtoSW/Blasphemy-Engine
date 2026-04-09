@@ -4,7 +4,7 @@
 
 #include <array>
 
-void Renderer::create_draw_image_renderpass() {
+void Renderer::createDrawImageRenderpass() {
 	VkAttachmentDescription colorAttachment = {};
 	colorAttachment.format = drawImage.imageFormat; // VK_FORMAT_R16G16B16A16_SFLOAT
 	colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -73,7 +73,7 @@ void Renderer::create_draw_image_renderpass() {
 	rendererDeletionQueue.pushRenderPass(drawImageRenderPass);
 }
 
-void Renderer::create_swapchain_renderpass() {
+void Renderer::createSwapchainRenderpass() {
 	VkAttachmentDescription colorAttachment = {};
 	colorAttachment.format = vkBackend.getSwapChainImageFormat(); // e.g., VK_FORMAT_B8G8R8A8_UNORM
 	colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;

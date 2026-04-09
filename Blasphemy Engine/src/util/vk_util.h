@@ -28,7 +28,7 @@ public:
 	void flushMainResources(VkDevice device, VmaAllocator& vmaAllocator);
 	void flushResize(VkDevice device, VmaAllocator& vmaAllocator);
 
-	inline void pushFrameBuffer(const AllocatedBuffer& buffer) { vmaFrameAllocatedBuffer.push_back(buffer); }
+	inline void pushVMAFrameAllocatedBuffer(const AllocatedBuffer& buffer) { vmaFrameAllocatedBuffer.push_back(buffer); }
 	inline void pushBuffer(const AllocatedBuffer& buffer) { vmaAllocatedBuffer.push_back(buffer); }
 
 	inline void pushImage(const AllocatedImage& image) { allocatedImages.push_back(image); }

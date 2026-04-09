@@ -39,11 +39,14 @@ private:
 	
 	
 	void initDescriptors();
+	void initFramebuffers();
 
 
-	void create_draw_image_renderpass();
-	void create_swapchain_renderpass();
+
+	void destroyFramebuffer();
+	void createDrawImageRenderpass();
+	void createSwapchainRenderpass();
 	
-	void create_swapchain_framebuffer();
-	void create_draw_image_framebuffer();
+	void createSwapchainFramebuffer();
+	void createDrawImageFramebuffer();
 };

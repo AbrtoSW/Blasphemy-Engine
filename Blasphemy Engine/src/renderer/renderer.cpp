@@ -91,10 +91,10 @@ void Renderer::createOffscreenTargets() {
 	VK_CHECK(vkCreateImageView(vkBackend.getDevice(), &dview_info, nullptr, &depthImage.imageView));
 	rendererDeletionQueue.pushOffscreenImage(depthImage);
 
-	create_draw_image_renderpass();
-	create_swapchain_renderpass();
-	create_draw_image_framebuffer();
-	create_swapchain_framebuffer();
+	createDrawImageRenderpass();
+	createSwapchainRenderpass();
+	createDrawImageFramebuffer();
+	createSwapchainFramebuffer();
 
 }
 

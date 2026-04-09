@@ -4,7 +4,7 @@
 
 
 
-void Renderer::create_swapchain_framebuffer() {
+void Renderer::createSwapchainFramebuffer() {
 
 	swapchainFrameBuffers.resize(vkBackend.getSwapchainImageCount());
 	
@@ -27,7 +27,7 @@ void Renderer::create_swapchain_framebuffer() {
 	}
 }
 
-void Renderer::create_draw_image_framebuffer() {
+void Renderer::createDrawImageFramebuffer() {
 
 	std::array<VkImageView, 2> attachments = { drawImage.imageView, depthImage.imageView }; 
 
@@ -43,3 +43,20 @@ void Renderer::create_draw_image_framebuffer() {
 	VK_CHECK(vkCreateFramebuffer(vkBackend.getDevice(), &framebufferInfo, nullptr, &drawImageFrameBuffer));
 	rendererDeletionQueue.pushFramebuffer(drawImageFrameBuffer);
 }
+
+void Renderer::initFramebuffers() {
+	createSwapchainFramebuffer();
+	createDrawImageFramebuffer();
+}
+
+
+void Renderer::destroyFramebuffer() {
+	
+	rendererDeletionQueue.pushFramebuffer(drawImageFrameBuffer);
+
+	for (VkFramebuffer& fb : swapchainFrameBuffers) {
+		rendererDeletionQueue.pushFramebuffer(fb);
+	}
+
+}
+

@@ -12,6 +12,7 @@ void DeletionQueue::flushFrameResources(VmaAllocator& vmaAllocator) {
 }
 
 void DeletionQueue::flushMainResources(VkDevice device, VmaAllocator& vmaAllocator) {
+
 	for (auto& fb : framebuffers) {
 		if (fb != VK_NULL_HANDLE) {
 			vkDestroyFramebuffer(device, fb, nullptr);
@@ -66,6 +67,7 @@ void DeletionQueue::flushMainResources(VkDevice device, VmaAllocator& vmaAllocat
 }
 
 void DeletionQueue::flushResize(VkDevice device, VmaAllocator& vmaAllocator) {
+
 	for (auto& fb : framebuffers) {
 		if (fb != VK_NULL_HANDLE) {
 			vkDestroyFramebuffer(device, fb, nullptr);
