@@ -7,6 +7,7 @@
 
 bool Renderer::initRenderer() {
 
+
 	createOffscreenTargets();
 	createRenderpasses();
 	createFramebuffers();

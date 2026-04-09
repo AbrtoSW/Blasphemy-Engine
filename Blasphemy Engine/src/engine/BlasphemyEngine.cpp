@@ -21,7 +21,9 @@ bool BlasphemyEngine::init() {
 		return false;
 	}
 
-	renderer.createOffscreenTargets();
+	if (!renderer.initRenderer()) {
+		return false;
+	}
 
 	return true;
 }
@@ -45,7 +47,6 @@ void BlasphemyEngine::run() {
 
 		renderer.renderFrame();
 	
-		frameNumber++;
 	}
 
 	if (vkBackend.resizeRequested) {
@@ -98,7 +99,10 @@ void BlasphemyEngine::resizeWindow() {
 
 	VkExtent2D windowExtent = platform.getWindowExtent();
 	windowExtent = { (std::uint32_t)width, (std::uint32_t)height };
-	vkBackend.recreateSwapchainResources();
+	if (!vkBackend.recreateSwapchainResources()) {
+		std::cout << "Failed to recreate swapchain resources\n";
+		return;
+	}
 	renderer.createOffscreenTargets();
 	// renderer.initFramebuffers();
 	// renderer.initDescriptors();
