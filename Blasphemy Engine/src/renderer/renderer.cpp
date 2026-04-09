@@ -3,7 +3,13 @@
 #include "util/vk_helper.h"
 #include "util/vk_util.h"
 
+void Renderer::initRenderer() {
 
+	createRenderpasses();
+	createFramebuffers();
+	//initDescriptors();
+
+}
 
 void Renderer::renderFrame() {
 
@@ -43,6 +49,38 @@ void Renderer::renderFrame() {
 
 
 	VK_CHECK(vkEndCommandBuffer(cmd));
+
+
+
+	VkCommandBufferSubmitInfo cmdinfo = vkhelper::command_buffer_submit_info(cmd);
+
+	VkSemaphoreSubmitInfo waitInfo = vkhelper::semaphore_submit_info(VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT_KHR, frame.swapchainSemaphore);
+	VkSemaphoreSubmitInfo signalInfo = vkhelper::semaphore_submit_info(VK_PIPELINE_STAGE_2_ALL_GRAPHICS_BIT, currentRenderSemaphore);
+
+	VkSubmitInfo2 submit = vkhelper::submit_info(&cmdinfo, &signalInfo, &waitInfo);
+
+	VK_CHECK(vkQueueSubmit2(engine.graphicsQueue, 1, &submit, frame.renderFence));
+
+	// as its necessary that drawing commands have finished before the image is displayed to the user
+	VkPresentInfoKHR presentInfo = {};
+	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+	presentInfo.pNext = nullptr;
+	presentInfo.pSwapchains = &vkBackend.getSwapchainHandle();
+	presentInfo.swapchainCount = 1;
+
+	presentInfo.pWaitSemaphores = &currentRenderSemaphore;
+	presentInfo.waitSemaphoreCount = 1;
+
+	presentInfo.pImageIndices = &swapchainImageIndex;
+
+	VkResult presentResult = vkQueuePresentKHR(vkBackend.getGraphicsQueue(), &presentInfo);
+	if (presentResult == VK_ERROR_OUT_OF_DATE_KHR) {
+		vkBackend.resizeRequested = true;
+		return;
+	}
+
+	//increase the number of frames drawn
+	engine.frameNumber++;
 
 
 }
@@ -109,6 +147,9 @@ void Renderer::destroyOffscreenTargets() {
 }
 
 void Renderer::cleanup() {
+
+	enqueueRenderPassessForDeletion();
+	enqueueFramebuffersForDeletion();
 	destroyOffscreenTargets();
 	rendererDeletionQueue.flushMainResources(vkBackend.getDevice(), vkBackend.getVmaAllocator());
 }

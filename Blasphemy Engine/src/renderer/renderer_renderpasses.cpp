@@ -70,7 +70,6 @@ void Renderer::createDrawImageRenderpass() {
 	VK_CHECK(vkCreateRenderPass(vkBackend.getDevice(), &renderPassInfo, nullptr, &drawImageRenderPass));
 
 	//fix this
-	rendererDeletionQueue.pushRenderPass(drawImageRenderPass);
 }
 
 void Renderer::createSwapchainRenderpass() {
@@ -114,6 +113,88 @@ void Renderer::createSwapchainRenderpass() {
 	VK_CHECK(vkCreateRenderPass(vkBackend.getDevice(), &renderPassInfo, nullptr, &swapchainRenderPass));
 
 
-	rendererDeletionQueue.pushRenderPass(swapchainRenderPass);
 
+}
+
+void Renderer::initDrawImageRenderpass(VkCommandBuffer cmd) {
+
+	if (vkBackend.getDevice() == VK_NULL_HANDLE) {
+		throw std::runtime_error("Cannot initialize render pass: invalid device");
+	}
+	if (drawImage.imageFormat == VK_FORMAT_UNDEFINED) {
+		throw std::runtime_error("Cannot initialize render pass: invalid draw image format");
+	}
+	if (depthImage.imageFormat == VK_FORMAT_UNDEFINED) {
+		throw std::runtime_error("Cannot initialize render pass: invalid depth image format");
+	}
+
+
+	std::array<VkClearValue, 2> clearValues{};
+	clearValues[0].color = { 0.0f, 0.0f, 0.0f, 1.0f }; // color attachment
+	clearValues[1].depthStencil = { 1.0f, 0 };
+
+	VkRenderPassBeginInfo renderPassBeginInfo{};
+	renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassBeginInfo.renderPass = drawImageRenderPass;
+	renderPassBeginInfo.framebuffer = drawImageFrameBuffer;
+	renderPassBeginInfo.renderArea.extent = { drawExtent.width, drawExtent.height };
+	renderPassBeginInfo.renderArea.offset = { 0,0 };
+
+	renderPassBeginInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+	renderPassBeginInfo.pClearValues = clearValues.data();
+
+
+	//start rendering 
+	vkCmdBeginRenderPass(cmd, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+	//render_pass_geometry(cmd, item, context);
+	
+	vkCmdEndRenderPass(cmd);
+
+}
+
+void Renderer::initSwapchainRenderpass(VkCommandBuffer cmd, uint32_t imageIndex) {
+
+	if (vkBackend.getDevice() == VK_NULL_HANDLE) {
+		throw std::runtime_error("Cannot initialize render pass: invalid device");
+	}
+
+	if (vkBackend.getSwapChainImageFormat() == VK_FORMAT_UNDEFINED) {
+		throw std::runtime_error("Cannot initialize render pass: invalid swapchain image format");
+	}
+
+	VkClearValue clearValue{};
+	clearValue = { { 0.0f, 0.0f, 0.0f, 1.0f } };
+
+	VkRenderPassBeginInfo renderPassBeginInfo{};
+	renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassBeginInfo.renderPass = swapchainRenderPass;
+	renderPassBeginInfo.framebuffer = swapchainFrameBuffers[imageIndex];
+	renderPassBeginInfo.renderArea.extent = { vkBackend.getSwapchainExtent().width, vkBackend.getSwapchainExtent().height };
+	renderPassBeginInfo.renderArea.offset = { 0,0 };
+
+	renderPassBeginInfo.clearValueCount = 1;
+	renderPassBeginInfo.pClearValues = &clearValue;
+
+
+	//start rendering 
+	vkCmdBeginRenderPass(cmd, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+	//render_imgui(cmd);
+
+	vkCmdEndRenderPass(cmd);
+	//end rendering 
+
+}
+
+void Renderer::createRenderpasses() {
+	createDrawImageRenderpass();
+	createSwapchainRenderpass();
+}
+
+
+void Renderer::enqueueRenderPassessForDeletion() {
+
+	rendererDeletionQueue.pushRenderPass(drawImageRenderPass);
+	rendererDeletionQueue.pushRenderPass(swapchainRenderPass);
 }

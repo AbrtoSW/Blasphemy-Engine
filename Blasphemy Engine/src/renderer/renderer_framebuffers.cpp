@@ -22,8 +22,6 @@ void Renderer::createSwapchainFramebuffer() {
 		framebufferInfo.layers = 1; 
 
 		VK_CHECK(vkCreateFramebuffer(vkBackend.getDevice(), &framebufferInfo, nullptr, &swapchainFrameBuffers[i]));
-		rendererDeletionQueue.pushFramebuffer(swapchainFrameBuffers[i]);
-
 	}
 }
 
@@ -41,16 +39,15 @@ void Renderer::createDrawImageFramebuffer() {
 	framebufferInfo.layers = 1; 
 
 	VK_CHECK(vkCreateFramebuffer(vkBackend.getDevice(), &framebufferInfo, nullptr, &drawImageFrameBuffer));
-	rendererDeletionQueue.pushFramebuffer(drawImageFrameBuffer);
 }
 
-void Renderer::initFramebuffers() {
+void Renderer::createFramebuffers() {
 	createSwapchainFramebuffer();
 	createDrawImageFramebuffer();
 }
 
 
-void Renderer::destroyFramebuffer() {
+void Renderer::enqueueFramebuffersForDeletion() {
 	
 	rendererDeletionQueue.pushFramebuffer(drawImageFrameBuffer);
 

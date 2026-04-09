@@ -11,6 +11,8 @@ public:
 
 	Renderer(VulkanBackend& vulkanBackend) : vkBackend(vulkanBackend){};
 
+	void initRenderer();
+	
 	void renderFrame();
 
 	void createOffscreenTargets();
@@ -39,14 +41,19 @@ private:
 	
 	
 	void initDescriptors();
-	void initFramebuffers();
+	void createRenderpasses();
+	void createFramebuffers();
 
 
-
-	void destroyFramebuffer();
+	void enqueueRenderPassessForDeletion();
+	void enqueueFramebuffersForDeletion();
 	void createDrawImageRenderpass();
 	void createSwapchainRenderpass();
 	
 	void createSwapchainFramebuffer();
 	void createDrawImageFramebuffer();
+
+	void initDrawImageRenderpass(VkCommandBuffer cmd);
+	void initSwapchainRenderpass(VkCommandBuffer cmd, uint32_t imageIndex);
+
 };
