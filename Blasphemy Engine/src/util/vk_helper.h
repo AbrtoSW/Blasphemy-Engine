@@ -22,11 +22,11 @@ namespace vkhelper {
 	// Classic (non-sync2) submit helpers.
 	// NOTE: returned VkSubmitInfo stores pointers; caller must keep the pointed-to values alive until submission.
 	VkSubmitInfo submit_info(VkCommandBuffer* cmd, VkSemaphore* signalSemaphore, VkSemaphore* waitSemaphore, VkPipelineStageFlags* waitDstStageMask);
+	
 	VkImageSubresourceRange image_subresource_range(VkImageAspectFlags aspectMask);
-
-
-	void transition_image(VkCommandBuffer cmd, VkImage image, VkImageLayout currentLayout, VkImageLayout newLayout);
-	void transition_image(VkCommandBuffer cmd, VkImage image, VkImageLayout currentLayout, VkImageLayout newLayout, VkImageAspectFlags aspect, uint32_t baseMip, uint32_t levelCount, uint32_t baseLayer, uint32_t layerCount);
-	void transition_image(VkCommandBuffer cmd, VkImage image, VkImageLayout currentLayout, VkImageLayout newLayout, const VkImageSubresourceRange& range);
-
+	//void transition_image(VkCommandBuffer cmd, VkImage image, VkImageLayout currentLayout, VkImageLayout newLayout);
+	
+	void transition_image(VkCommandBuffer cmd, VkImage image, VkImageAspectFlags srcAccess, VkImageAspectFlags dstAccess, VkImageLayout oldLayout, VkImageLayout newLayout, const VkImageSubresourceRange& range, VkImageAspectFlags srcStage, VkImageAspectFlags dstStage);
+	void transition_image(VkCommandBuffer cmd, VkImage image, VkAccessFlags srcAccess, VkAccessFlags dstAccess, VkImageLayout oldLayout, VkImageLayout newLayout, VkPipelineStageFlags srcStage, VkPipelineStageFlags dstStage, VkImageAspectFlags aspect, uint32_t baseMip, uint32_t levelCount, uint32_t baseLayer, uint32_t layerCount);
+	void transition_image(VkCommandBuffer cmd, VkImage image, VkAccessFlags srcAccess, VkAccessFlags dstAccess, VkImageLayout oldLayout, VkImageLayout newLayout, VkPipelineStageFlags srcStage, VkPipelineStageFlags dstStage, const VkImageSubresourceRange& subresourceRange);
 }
