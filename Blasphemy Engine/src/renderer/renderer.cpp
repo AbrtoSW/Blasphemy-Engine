@@ -10,7 +10,7 @@ bool Renderer::initRenderer() {
 	createOffscreenTargets();
 	createRenderpasses();
 	createFramebuffers();
-	//initDescriptors();
+	createDescriptors();
 
 	return true;
 }
@@ -48,15 +48,18 @@ void Renderer::renderFrame() {
 	
 
 	vkhelper::transition_image(cmd, drawImage.image, 0, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1);
+
 	vkhelper::transition_image(cmd, drawImage.image, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1);
+	
 	vkhelper::transition_image(cmd, vkBackend.getSwapChainImage(swapchainImageIndex), 0, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1);
+
+	vkhelper::transition_image(cmd, vkBackend.getSwapChainImage(swapchainImageIndex), VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, 0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1);
 
 
 	VK_CHECK(vkEndCommandBuffer(cmd));
 
 
-
-	VkPipelineStageFlags waitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	VkPipelineStageFlags waitStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 	
 	VkSubmitInfo submit = vkhelper::submit_info(&cmd, &currentRenderSemaphore, &frame.swapchainSemaphore, &waitStage);
 

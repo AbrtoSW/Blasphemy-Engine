@@ -1,7 +1,27 @@
 #include "pipelines/pipeline_manager.h"
 #include "shader/shader_util.h"
+#include "util/vk_helper.h"
+#include "vulkan_backend/vk_backend.h"
+
 #include <set>
 #include <iostream>
+#include <filesystem>
+
+namespace {
+
+EShLanguage vk_stage_to_glslang(VkShaderStageFlagBits stage) {
+	switch (stage) {
+	case VK_SHADER_STAGE_VERTEX_BIT: return EShLangVertex;
+	case VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT: return EShLangTessControl;
+	case VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT: return EShLangTessEvaluation;
+	case VK_SHADER_STAGE_GEOMETRY_BIT: return EShLangGeometry;
+	case VK_SHADER_STAGE_FRAGMENT_BIT: return EShLangFragment;
+	case VK_SHADER_STAGE_COMPUTE_BIT: return EShLangCompute;
+	default: return EShLangCompute;
+	}
+}
+
+} // namespace
 
 void PipelineManager::registerPipeline(PipelineRes& pRes, Hotloadable hotload, std::optional<const char*> name /*= std::nullopt*/) {
 
@@ -78,113 +98,116 @@ void PipelineManager::hotloadShader() {
 		}
 	}
 
-	//for (auto* r : pipelinesToRebuild) {
+	for (auto* r : pipelinesToRebuild) {
 
-	//	VkPipeline rebuilt = rebuild();
-	//	
-	//	if (rebuilt == VK_NULL_HANDLE)
-	//	continue;
-	//	
-	//	//make sure this logic is correct because if we hot reload again we'd basically need this pipeline to be destroyed again but its not being tracked by the original pipeline it was in, the logic might be tracked inside rebuild function 
-	//	deletionQueue.pushPipeline(rebuilt);
+		VkPipeline rebuilt = rebuild(*r);
 
-	//	for (auto& s : r->shader.stages) {
-	//		s.lastModified = ShaderUtility::getFileTimeStamp(s.file.relativePath);
-	//	}
-	//}
+		if (rebuilt == VK_NULL_HANDLE)
+			continue;
+
+		for (auto& s : r->shader.stages) {
+			s.lastModified = ShaderUtility::getFileTimeStamp(s.file.relativePath);
+		}
+	}
+
 } 
 
-//VkPipeline PipelineManager::rebuild(VkDevice device, PipelineRes& res) {
-//
-//	std::cout << "rebuild Pipelines called\n";
-//
-//	VkPipeline oldPipeline = res.pipeline;
-//
-//	auto& cfg = res.config;
-//
-//	std::cout << "old pipeline object identification is : " << (void*)oldPipeline << "\n";
-//	std::cout << "RenderPass handle on rebuild: " << (void*)cfg.renderPass << "\n";
-//
-//	cfg.shaderStages.clear();
-//
-//
-//
-//	std::vector<VkShaderModule> modules;
-//
-//	for (auto& s : res.shader.stages) {
-//
-//		if (s.file.relativePath.empty())
-//			continue;
-//
-//		VkShaderModule mod = ShaderUtility::compileToSPV(device, s.file.relativePath,
-//			(s.stage == VK_SHADER_STAGE_VERTEX_BIT ? EShLangVertex :
-//				s.stage == VK_SHADER_STAGE_FRAGMENT_BIT ? EShLangFragment :
-//				s.stage == VK_SHADER_STAGE_GEOMETRY_BIT ? EShLangGeometry :
-//				EShLangCompute));
-//
-//		if (!mod)
-//			continue;
-//
-//		modules.push_back(mod);
-//
-//		cfg->shaderStages.push_back(
-//			vkinit::pipeline_shader_stage_create_info(s.stage, mod));
-//	}
-//
-//	VkGraphicsPipelineCreateInfo pipelineInfo{ VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO };
-//
-//	if (cfg->renderMode == RenderMode::Dynamic) {
-//		pipelineInfo.renderPass = VK_NULL_HANDLE;
-//		pipelineInfo.subpass = 0;
-//		pipelineInfo.pNext = &cfg->renderInfo;
-//		cfg->renderPass = VK_NULL_HANDLE;
-//	}
-//	else {
-//		pipelineInfo.renderPass = cfg->renderPass;
-//		pipelineInfo.subpass = 0;
-//		pipelineInfo.pNext = nullptr;
-//	}
-//
-//	pipelineInfo.stageCount = (uint32_t)cfg->shaderStages.size();
-//	pipelineInfo.pStages = cfg->shaderStages.data();
-//	pipelineInfo.pVertexInputState = &cfg->vertexInputInfo;
-//	pipelineInfo.pInputAssemblyState = &cfg->inputAssembly;
-//	pipelineInfo.pViewportState = &cfg->viewportStateInfo;
-//	pipelineInfo.pRasterizationState = &cfg->rasterizer;
-//	pipelineInfo.pMultisampleState = &cfg->multisampling;
-//	pipelineInfo.pColorBlendState = &cfg->colorBlendingInfo;
-//	pipelineInfo.pDepthStencilState = &cfg->depthStencil;
-//	pipelineInfo.pDynamicState = &cfg->dynamicStateInfo;
-//	pipelineInfo.layout = res.pLayout;
-//
-//	fmt::print("Pipeline pointers:\n");
-//	fmt::print("  pStages: {}\n", (void*)pipelineInfo.pStages);
-//	fmt::print("  pVertexInputState: {}\n", (void*)pipelineInfo.pVertexInputState);
-//	fmt::print("  pInputAssemblyState: {}\n", (void*)pipelineInfo.pInputAssemblyState);
-//	fmt::print("  pViewportState: {}\n", (void*)pipelineInfo.pViewportState);
-//	fmt::print("  pRasterizationState: {}\n", (void*)pipelineInfo.pRasterizationState);
-//	fmt::print("  pMultisampleState: {}\n", (void*)pipelineInfo.pMultisampleState);
-//	fmt::print("  pColorBlendState: {}\n", (void*)pipelineInfo.pColorBlendState);
-//	fmt::print("  pDepthStencilState: {}\n", (void*)pipelineInfo.pDepthStencilState);
-//	fmt::print("  layout: {}\n", (void*)pipelineInfo.layout);
-//	fmt::print("  pDynamicState: {}\n", (void*)pipelineInfo.pDynamicState);
-//	fmt::print("  renderPass: {}\n", (void*)pipelineInfo.renderPass);
-//
-//	VkPipeline newPipeline = VK_NULL_HANDLE;
-//	VkResult vr = vkCreateGraphicsPipelines(device, nullptr, 1, &pipelineInfo, nullptr, &newPipeline);
-//
-//	if (vertexModule)   vkDestroyShaderModule(device, vertexModule, nullptr);
-//	if (fragmentModule) vkDestroyShaderModule(device, fragmentModule, nullptr);
-//
-//	if (vr != VK_SUCCESS) {
-//		fmt::println("Failed to rebuild pipeline");
-//		return VK_NULL_HANDLE;
-//	}
-//
-//	res.pipeline = newPipeline;
-//	return newPipeline;
-//}
-//
+VkPipeline PipelineManager::rebuild(PipelineRes& res) {
+
+	std::cout << "rebuild Pipelines called\n";
+
+	VkPipeline oldPipeline { res.pipeline };
+
+	BaseGraphicsPipelineConfig& cfg { res.config };
+
+	std::cout << "old pipeline object identification is : " << (void*)oldPipeline << "\n";
+	std::cout << "RenderPass handle on rebuild: " << (void*)cfg.renderPass << "\n";
+
+	cfg.shaderStages.clear();
+
+
+	std::vector<VkShaderModule> modules{};
+
+	for (auto& s : res.shader.stages) {
+
+		if (s.file.relativePath.empty())
+			continue;
+
+		VkShaderModule mod = ShaderUtility::compileToSPV(vkBackend.getDevice(), s.file.relativePath,
+			vk_stage_to_glslang(s.stage), std::filesystem::path(s.file.relativePath).parent_path());
+
+		if (!mod)
+			continue;
+
+		modules.push_back(mod);
+
+		cfg.shaderStages.push_back(vkhelper::pipeline_shader_stage_create_info(s.stage, mod));
+	}
+
+	VkGraphicsPipelineCreateInfo pipelineInfo{ VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO };
+
+	
+	pipelineInfo.renderPass = cfg.renderPass;
+	pipelineInfo.subpass = 0;
+	pipelineInfo.pNext = nullptr;
+
+	pipelineInfo.stageCount = (uint32_t)cfg.shaderStages.size();
+	pipelineInfo.pStages = cfg.shaderStages.data();
+	pipelineInfo.pVertexInputState = &cfg.vertexInputInfo;
+	pipelineInfo.pInputAssemblyState = &cfg.inputAssembly;
+	pipelineInfo.pViewportState = &cfg.viewportStateInfo;
+	pipelineInfo.pRasterizationState = &cfg.rasterizer;
+	pipelineInfo.pMultisampleState = &cfg.multisampling;
+	pipelineInfo.pColorBlendState = &cfg.colorBlendingInfo;
+	pipelineInfo.pDepthStencilState = &cfg.depthStencil;
+	pipelineInfo.pDynamicState = &cfg.dynamicStateInfo;
+	pipelineInfo.layout = res.pLayout;
+
+	std::cout << "Pipeline pointers:\n";
+	std::cout << "  pStages: " << (void*)pipelineInfo.pStages << "\n";
+	std::cout << "  pVertexInputState: " << (void*)pipelineInfo.pVertexInputState << "\n";
+	std::cout << "  pInputAssemblyState: " << (void*)pipelineInfo.pInputAssemblyState << "\n";
+	std::cout << "  pViewportState: " << (void*)pipelineInfo.pViewportState << "\n";
+	std::cout << "  pRasterizationState: " << (void*)pipelineInfo.pRasterizationState << "\n";
+	std::cout << "  pMultisampleState: " << (void*)pipelineInfo.pMultisampleState << "\n";
+	std::cout << "  pColorBlendState: " << (void*)pipelineInfo.pColorBlendState << "\n";
+	std::cout << "  pDepthStencilState: " << (void*)pipelineInfo.pDepthStencilState << "\n";
+	std::cout << "  layout: " << (void*)pipelineInfo.layout << "\n";
+	std::cout << "  pDynamicState: " << (void*)pipelineInfo.pDynamicState << "\n";
+	std::cout << "  renderPass: " << (void*)pipelineInfo.renderPass << "\n";
+
+	if (cfg.shaderStages.empty()) {
+		std::cout << "Failed to rebuild pipeline: no shader stages compiled\n";
+		return VK_NULL_HANDLE;
+	}
+
+	VkDevice device = vkBackend.getDevice();
+
+	auto destroyModules = [&]() {
+		for (VkShaderModule m : modules) {
+			if (m != VK_NULL_HANDLE)
+				vkDestroyShaderModule(device, m, nullptr);
+		}
+		modules.clear();
+	};
+
+	VkPipeline newPipeline = VK_NULL_HANDLE;
+	VkResult vr = vkCreateGraphicsPipelines(device, nullptr, 1, &pipelineInfo, nullptr, &newPipeline);
+
+	if (vr != VK_SUCCESS) {
+		std::cout << "Failed to rebuild pipeline\n";
+		destroyModules();
+		return VK_NULL_HANDLE;
+	}
+
+	if (oldPipeline != VK_NULL_HANDLE && queuedPipelines.insert(oldPipeline).second)
+		deletionQueue.pushPipeline(oldPipeline);
+
+	res.pipeline = newPipeline;
+	destroyModules();
+	return newPipeline;
+}
+
 
 
 

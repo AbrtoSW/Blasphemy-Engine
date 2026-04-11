@@ -1,6 +1,7 @@
 #pragma once
 #include "types/vk_types.h"
 #include "util/vk_util.h"
+#include "descriptors/descriptors.h"
 #include <vector>
 
 class VulkanBackend;
@@ -18,6 +19,7 @@ public:
 	void createOffscreenTargets();
 
 	void destroyOffscreenTargets();
+
 	void cleanup();
 
 private:
@@ -37,10 +39,12 @@ private:
 
 	DeletionQueue rendererDeletionQueue{};
 
+	DescriptorAllocatorGrowable mainDescriptorAllocator{};
 
+	VkDescriptorSet drawImageDescriptorSet{};
+	VkDescriptorSetLayout drawImageDescriptorSetLayout{};
 	
 	
-	void initDescriptors();
 	void createRenderpasses();
 	void createFramebuffers();
 
@@ -55,5 +59,7 @@ private:
 
 	void initDrawImageRenderpass(VkCommandBuffer cmd);
 	void initSwapchainRenderpass(VkCommandBuffer cmd, uint32_t imageIndex);
-
+	void createDescriptors();
+	void initDrawImageDescriptor();
+	void initFrameDescriptors();
 };
