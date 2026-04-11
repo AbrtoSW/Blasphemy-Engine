@@ -2,15 +2,18 @@
 #include "types/vk_types.h"
 #include "util/vk_util.h"
 #include "descriptors/descriptors.h"
+#include "pipelines/pipeline_types.h"
+
 #include <vector>
 
 class VulkanBackend;
+class PipelineManager;
 
 class Renderer {
 
 public:
 
-	Renderer(VulkanBackend& vulkanBackend) : vkBackend(vulkanBackend){};
+	Renderer(VulkanBackend& vulkanBackend, PipelineManager pipelineManager) : vkBackend(vulkanBackend), pipelineManager(pipelineManager) {};
 
 	bool initRenderer();
 	
@@ -25,6 +28,7 @@ public:
 private:
 
 	VulkanBackend& vkBackend;
+	PipelineManager& pipelineManager;
 
 	VkExtent2D drawExtent{};
 
@@ -43,6 +47,8 @@ private:
 
 	VkDescriptorSet drawImageDescriptorSet{};
 	VkDescriptorSetLayout drawImageDescriptorSetLayout{};
+
+	PipelineID drawImagePR{};
 	
 	
 	void createRenderpasses();
