@@ -39,11 +39,11 @@ public:
 		return pID++;
 	}
 
-	void registerPipeline(PipelineRes& pRes, Hotloadable hotload, std::optional<const char*> name = std::nullopt);
+	void registerPipeline(PipelineRes& pRes, PipelineID& rendererHandlePipelineID, Hotloadable hotload, std::optional<const char*> name = std::nullopt);
 	void destroyPipelineResources(VkDevice device);
 	void showInfo();
-	VkPipeline getPipeline(PipelineRes& res) const;
-	VkPipelineLayout getLayout(PipelineRes& res) const;
+	VkPipeline getPipeline(PipelineID& id) const;
+	VkPipelineLayout getLayout(PipelineID& id) const;
 	void hotloadShader();
 	VkPipeline rebuild(PipelineRes& res);
 
@@ -52,6 +52,10 @@ public:
 
 private:
 
+	PipelineRes drawImagePR{};
+
+	
+	
 	VulkanBackend& vkBackend;
 	PipelineDeletionQueue deletionQueue;
 

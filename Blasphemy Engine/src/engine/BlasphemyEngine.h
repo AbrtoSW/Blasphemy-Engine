@@ -5,6 +5,11 @@
 #include "vulkan_backend/vk_backend.h"
 #include "renderer/renderer.h"
 
+
+struct EnginePaths {
+	std::filesystem::path content{};
+};
+
 class BlasphemyEngine {
 
 public:

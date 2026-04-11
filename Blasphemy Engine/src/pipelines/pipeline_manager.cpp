@@ -6,6 +6,7 @@
 #include <set>
 #include <iostream>
 #include <filesystem>
+#include <algorithm>
 
 namespace {
 
@@ -23,13 +24,15 @@ EShLanguage vk_stage_to_glslang(VkShaderStageFlagBits stage) {
 
 } // namespace
 
-void PipelineManager::registerPipeline(PipelineRes& pRes, Hotloadable hotload, std::optional<const char*> name /*= std::nullopt*/) {
+void PipelineManager::registerPipeline(PipelineRes& pRes, PipelineID& rendererHandlePipelineID,Hotloadable hotload, std::optional<const char*> name /*= std::nullopt*/) {
 
+	
 	PipelineID id = pRes.id;
 
 	if (id == 0) {
 		id = nextID();
 		pRes.id = id;
+		rendererHandlePipelineID = pRes.id;
 	}
 	else {
 		
@@ -48,7 +51,7 @@ void PipelineManager::registerPipeline(PipelineRes& pRes, Hotloadable hotload, s
 	}
 
 	pipelineStorage[id] = pRes;
-
+	rendererHandlePipelineID = pRes.id;
 	if (name)
 		pipelineStorage[id].name = *name;
 
@@ -223,13 +226,13 @@ void PipelineManager::showInfo() {
 	}
 }
 
-VkPipeline PipelineManager::getPipeline(PipelineRes& res) const {
-	auto it = pipelineStorage.find(res.id);
+VkPipeline PipelineManager::getPipeline(PipelineID& id) const {
+	auto it = pipelineStorage.find(id);
 	return (it != pipelineStorage.end()) ? it->second.pipeline : VK_NULL_HANDLE;
 }
 
-VkPipelineLayout PipelineManager::getLayout(PipelineRes& res) const {
-	auto it = pipelineStorage.find(res.id);
+VkPipelineLayout PipelineManager::getLayout(PipelineID& id) const {
+	auto it = pipelineStorage.find(id);
 	return (it != pipelineStorage.end()) ? it->second.pLayout : VK_NULL_HANDLE;
 }
 

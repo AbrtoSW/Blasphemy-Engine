@@ -153,7 +153,9 @@
     <ClCompile Include="src\pipelines\pipeline_builder.cpp" />
     <ClCompile Include="src\pipelines\pipeline_manager.cpp" />
     <ClCompile Include="src\renderer\renderer.cpp" />
+    <ClCompile Include="src\renderer\renderer_descriptors.cpp" />
     <ClCompile Include="src\renderer\renderer_framebuffers.cpp" />
+    <ClCompile Include="src\renderer\renderer_pipelines.cpp" />
     <ClCompile Include="src\renderer\renderer_renderpasses.cpp" />
     <ClCompile Include="src\shader\glslangDefaultTBuiltinResource.cpp" />
     <ClCompile Include="src\shader\shader_util.cpp" />
