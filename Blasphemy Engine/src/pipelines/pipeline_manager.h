@@ -53,8 +53,6 @@ public:
 private:
 
 	PipelineRes drawImagePR{};
-
-	
 	
 	VulkanBackend& vkBackend;
 	PipelineDeletionQueue deletionQueue;

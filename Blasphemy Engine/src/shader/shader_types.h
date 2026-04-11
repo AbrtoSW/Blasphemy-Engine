@@ -1,24 +1,19 @@
 #pragma once
-#include <string>
-#include <filesystem>
+
 #include "volk/volk.h"
 
-struct ShaderFile {
 
-	std::string relativePath;
-
-	ShaderFile() = default;
-
-	explicit ShaderFile(const std::string& file) : relativePath(file) {}
-	
-};
+#include <filesystem>
+#include <vector>
 
 struct ShaderInfo {
-	ShaderFile file;
+	std::filesystem::path relativePath;
 	VkShaderStageFlagBits stage;
 	std::filesystem::file_time_type lastModified;
 };
 
 struct Shader {
 	std::vector<ShaderInfo> stages;
+	void addStage(std::filesystem::path relativePath, VkShaderStageFlagBits stage) { stages.push_back({ relativePath, stage }); }
+
 };

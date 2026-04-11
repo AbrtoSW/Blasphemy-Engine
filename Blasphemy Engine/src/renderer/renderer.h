@@ -13,7 +13,7 @@ class Renderer {
 
 public:
 
-	Renderer(VulkanBackend& vulkanBackend, PipelineManager pipelineManager) : vkBackend(vulkanBackend), pipelineManager(pipelineManager) {};
+	Renderer(VulkanBackend& vulkanBackend, PipelineManager& pipelineManager) : vkBackend(vulkanBackend), pipelineManager(pipelineManager) {};
 
 	bool initRenderer();
 	
@@ -48,7 +48,7 @@ private:
 	VkDescriptorSet drawImageDescriptorSet{};
 	VkDescriptorSetLayout drawImageDescriptorSetLayout{};
 
-	PipelineID drawImagePR{};
+	PipelineID drawImagePipelineID{};
 	
 	
 	void createRenderpasses();

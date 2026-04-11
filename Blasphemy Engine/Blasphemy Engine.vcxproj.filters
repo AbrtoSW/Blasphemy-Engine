@@ -146,5 +146,8 @@
     <ClInclude Include="src\shader\glslangDefaultTBuiltinResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\engine\EnginePaths.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

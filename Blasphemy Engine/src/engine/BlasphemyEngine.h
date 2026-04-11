@@ -1,14 +1,11 @@
 #pragma once
 
 #include <string>
+#include "engine/EnginePaths.h"
+#include "pipelines/pipeline_manager.h"
 #include "platform/platform.h"
-#include "vulkan_backend/vk_backend.h"
 #include "renderer/renderer.h"
-
-
-struct EnginePaths {
-	std::filesystem::path content{};
-};
+#include "vulkan_backend/vk_backend.h"
 
 class BlasphemyEngine {
 
@@ -27,7 +24,9 @@ private:
 	std::uint64_t frameNumber{};
 	Platform platform{};
 	VulkanBackend vkBackend{ platform };
-	Renderer renderer{ vkBackend };
+	EnginePaths paths{};
+	PipelineManager pipelineManager{ vkBackend };
+	Renderer renderer{ vkBackend , pipelineManager};
 
 };
 

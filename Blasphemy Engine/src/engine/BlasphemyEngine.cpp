@@ -1,7 +1,8 @@
 #include "BlasphemyEngine.h"
 
-#include <iostream>
 #include <chrono>
+#include <filesystem>
+#include <iostream>
 #include <thread>
 
 #include "platform/platform.h"
@@ -12,6 +13,8 @@
 bool BlasphemyEngine::init() {
 
 	typeOut("Initiating Blasphemy Engine" , 30);
+
+	paths.gameAssets = std::filesystem::current_path() / "shaders";
 
 	if (!platform.init()) {
 		return false;

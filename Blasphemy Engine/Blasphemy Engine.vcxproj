@@ -175,6 +175,7 @@
   <ItemGroup>
     <ClInclude Include="src\engine\BlasphemyEngine.h" />
     <ClInclude Include="src\descriptors\descriptors.h" />
+    <ClInclude Include="src\engine\EnginePaths.h" />
     <ClInclude Include="src\pipelines\pipeline_builder.h" />
     <ClInclude Include="src\pipelines\pipeline_manager.h" />
     <ClInclude Include="src\pipelines\pipeline_types.h" />
