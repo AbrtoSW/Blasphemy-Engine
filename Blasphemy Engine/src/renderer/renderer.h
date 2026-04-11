@@ -68,4 +68,6 @@ private:
 	void createDescriptors();
 	void initDrawImageDescriptor();
 	void initFrameDescriptors();
+	void createPipelines();
+	void drawImagePipeline();
 };

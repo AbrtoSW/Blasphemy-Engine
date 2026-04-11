@@ -9,7 +9,7 @@ void Renderer::createSwapchainFramebuffer() {
 
 	swapchainFrameBuffers.resize(vkBackend.getSwapchainImageCount());
 	
-	for (size_t i = 0; i < vkBackend.getSwapchainImageCount(); ++i) {
+	for (std::uint32_t i = 0; i < vkBackend.getSwapchainImageCount(); ++i) {
 
 		VkImageView attachments[]{vkBackend.getSwapchainImageView(i)}; 
 

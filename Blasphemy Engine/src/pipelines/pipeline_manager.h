@@ -9,6 +9,7 @@
 #include <optional>
 
 class VulkanBackend;
+class EnginePaths;
 
 struct PipelineDeletionQueue {
 	std::vector<VkPipeline>        pipelines;
@@ -33,7 +34,7 @@ struct PipelineDeletionQueue {
 class PipelineManager {
 public:
 
-	PipelineManager(VulkanBackend& vkBackend) : vkBackend(vkBackend){}
+	PipelineManager(VulkanBackend& vkBackend, EnginePaths& ep) : vkBackend(vkBackend), enginePaths(ep){}
 	
 	inline static PipelineID nextID() {
 		return pID++;
@@ -47,14 +48,18 @@ public:
 	void hotloadShader();
 	VkPipeline rebuild(PipelineRes& res);
 
-
+	EnginePaths getEnginePath() const { return enginePaths; }
 	auto& getShaderMap() { return shaderMap; }
+
+	PipelineRes drawImagePR{};
+
 
 private:
 
-	PipelineRes drawImagePR{};
 	
 	VulkanBackend& vkBackend;
+	EnginePaths& enginePaths;
+
 	PipelineDeletionQueue deletionQueue;
 
 	std::unordered_map<PipelineID, PipelineRes> pipelineStorage;

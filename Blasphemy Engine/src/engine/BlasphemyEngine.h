@@ -25,7 +25,7 @@ private:
 	Platform platform{};
 	VulkanBackend vkBackend{ platform };
 	EnginePaths paths{};
-	PipelineManager pipelineManager{ vkBackend };
+	PipelineManager pipelineManager{ vkBackend, paths };
 	Renderer renderer{ vkBackend , pipelineManager};
 
 };

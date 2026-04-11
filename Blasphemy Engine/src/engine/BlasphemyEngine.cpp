@@ -14,7 +14,7 @@ bool BlasphemyEngine::init() {
 
 	typeOut("Initiating Blasphemy Engine" , 30);
 
-	paths.gameAssets = std::filesystem::current_path() / "shaders";
+	paths.gameAssets = std::filesystem::current_path() / "game assets" / "shaders";
 
 	if (!platform.init()) {
 		return false;

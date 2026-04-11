@@ -2,6 +2,7 @@
 #include "shader/shader_util.h"
 #include "util/vk_helper.h"
 #include "vulkan_backend/vk_backend.h"
+#include "engine/EnginePaths.h"
 
 #include <set>
 #include <iostream>
@@ -9,6 +10,21 @@
 #include <algorithm>
 
 namespace {
+
+std::filesystem::path resolvedGameAssetPath(const EnginePaths& ep, const std::filesystem::path& rel) {
+	if (rel.empty())
+		return {};
+	return ep.gameAssets / rel;
+}
+
+std::string canonicalShaderKey(const EnginePaths& ep, const std::filesystem::path& rel) {
+	std::filesystem::path p = resolvedGameAssetPath(ep, rel);
+	std::error_code ec;
+	std::filesystem::path c = std::filesystem::weakly_canonical(p, ec);
+	if (!ec)
+		return c.string();
+	return p.lexically_normal().string();
+}
 
 EShLanguage vk_stage_to_glslang(VkShaderStageFlagBits stage) {
 	switch (stage) {
@@ -71,9 +87,9 @@ void PipelineManager::track_shaders_for_hotload(PipelineRes& resource) {
 	};
 
 	for (auto& s : resource.shader.stages) {
-		if (!s.file.relativePath.empty()) {
-			add(s.file.relativePath);
-			std::cout << "Registered stage: " << s.stage << "\n path: " << s.file.relativePath << "\n last time modified: " << s.lastModified.time_since_epoch().count() << "\n";
+		if (!s.relativePath.empty()) {
+			add(canonicalShaderKey(enginePaths, s.relativePath));
+			std::cout << "Registered stage: " << s.stage << "\n path: " << s.relativePath.string() << "\n last time modified: " << s.lastModified.time_since_epoch().count() << "\n";
 		}
 	}
 }
@@ -92,7 +108,7 @@ void PipelineManager::hotloadShader() {
 
 			for (auto& s : r->shader.stages) {
 
-				if (s.file.relativePath == file) {
+				if (canonicalShaderKey(enginePaths, s.relativePath) == file) {
 
 					if (newStamp != s.lastModified)
 						pipelinesToRebuild.insert(r);
@@ -109,7 +125,7 @@ void PipelineManager::hotloadShader() {
 			continue;
 
 		for (auto& s : r->shader.stages) {
-			s.lastModified = ShaderUtility::getFileTimeStamp(s.file.relativePath);
+			s.lastModified = ShaderUtility::getFileTimeStamp(resolvedGameAssetPath(enginePaths, s.relativePath).string());
 		}
 	}
 
@@ -133,11 +149,12 @@ VkPipeline PipelineManager::rebuild(PipelineRes& res) {
 
 	for (auto& s : res.shader.stages) {
 
-		if (s.file.relativePath.empty())
+		if (s.relativePath.empty())
 			continue;
 
-		VkShaderModule mod = ShaderUtility::compileToSPV(vkBackend.getDevice(), s.file.relativePath,
-			vk_stage_to_glslang(s.stage), std::filesystem::path(s.file.relativePath).parent_path());
+		const std::filesystem::path resolved = resolvedGameAssetPath(enginePaths, s.relativePath);
+		VkShaderModule mod = ShaderUtility::compileToSPV(vkBackend.getDevice(), resolved.string(),
+			vk_stage_to_glslang(s.stage), resolved.parent_path());
 
 		if (!mod)
 			continue;
@@ -210,8 +227,6 @@ VkPipeline PipelineManager::rebuild(PipelineRes& res) {
 	destroyModules();
 	return newPipeline;
 }
-
-
 
 
 void PipelineManager::destroyPipelineResources(VkDevice device) {
