@@ -1,6 +1,5 @@
-#include "shader/shader_util.h"
+#include "shader_compiler/shader_util.h"
 #include "util/vk_util.h"
-
 #include <glslang/SPIRV/GlslangToSpv.h>
 #include <fstream>
 #include <iostream>
@@ -127,3 +126,4 @@ void RuntimeIncluder::releaseInclude(IncludeResult* result)
 	delete[] result->headerData;
 	delete result;
 }
+

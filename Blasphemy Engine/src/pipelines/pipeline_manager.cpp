@@ -1,5 +1,5 @@
 #include "pipelines/pipeline_manager.h"
-#include "shader/shader_util.h"
+#include "shader_compiler/shader_util.h"
 #include "util/vk_helper.h"
 #include "vulkan_backend/vk_backend.h"
 #include "engine/EnginePaths.h"

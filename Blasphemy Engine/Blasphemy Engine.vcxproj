@@ -157,8 +157,8 @@
     <ClCompile Include="src\renderer\renderer_framebuffers.cpp" />
     <ClCompile Include="src\renderer\renderer_pipelines.cpp" />
     <ClCompile Include="src\renderer\renderer_renderpasses.cpp" />
-    <ClCompile Include="src\shader\glslangDefaultTBuiltinResource.cpp" />
-    <ClCompile Include="src\shader\shader_util.cpp" />
+    <ClCompile Include="src\shader_compiler\glslangDefaultTBuiltinResource.cpp" />
+    <ClCompile Include="src\shader_compiler\shader_util.cpp" />
     <ClCompile Include="src\util\utility.cpp" />
     <ClCompile Include="src\util\vk_helper.cpp" />
     <ClCompile Include="src\vulkan_backend\vk_backend.cpp" />
@@ -180,9 +180,9 @@
     <ClInclude Include="src\pipelines\pipeline_manager.h" />
     <ClInclude Include="src\pipelines\pipeline_types.h" />
     <ClInclude Include="src\renderer\renderer.h" />
-    <ClInclude Include="src\shader\glslangDefaultTBuiltinResource.h" />
-    <ClInclude Include="src\shader\shader_types.h" />
-    <ClInclude Include="src\shader\shader_util.h" />
+    <ClInclude Include="src\shader_compiler\glslangDefaultTBuiltinResource.h" />
+    <ClInclude Include="src\shader_compiler\shader_types.h" />
+    <ClInclude Include="src\shader_compiler\shader_util.h" />
     <ClInclude Include="src\util\utility.h" />
     <ClInclude Include="src\vulkan_backend\vk_backend.h" />
     <ClInclude Include="src\vulkan_backend\vk_backend_instance_builder.h" />

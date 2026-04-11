@@ -1,13 +1,15 @@
 #pragma once
 #include <filesystem>
 #include <glslang/Public/ShaderLang.h>
-#include "shader/glslangDefaultTBuiltinResource.h"
+#include "shader_compiler/glslangDefaultTBuiltinResource.h"
+
 #include "volk/volk.h"
 #include "util/utility.h"
 
 namespace ShaderUtility {
 	std::filesystem::file_time_type getFileTimeStamp(std::string_view fullPath);
 	VkShaderModule compileToSPV(VkDevice device, std::string_view fullPath, EShLanguage stage, const std::filesystem::path& includeBase);
+
 }
 
 
