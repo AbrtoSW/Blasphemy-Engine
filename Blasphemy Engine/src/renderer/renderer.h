@@ -52,6 +52,8 @@ private:
 	
 	
 	void createRenderpasses();
+	void recordSceneGeometry(VkCommandBuffer cmd);
+	void recordPostProcessPass(VkCommandBuffer cmd);
 	void createFramebuffers();
 
 
@@ -63,8 +65,8 @@ private:
 	void createSwapchainFramebuffer();
 	void createDrawImageFramebuffer();
 
-	void initDrawImageRenderpass(VkCommandBuffer cmd);
-	void initSwapchainRenderpass(VkCommandBuffer cmd, uint32_t imageIndex);
+	void recordDrawImagePass(VkCommandBuffer cmd);
+	void recordSwapchainPass(VkCommandBuffer cmd, uint32_t imageIndex);
 	void createDescriptors();
 	void initDrawImageDescriptor();
 	void initFrameDescriptors();

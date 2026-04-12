@@ -100,6 +100,9 @@ bool VulkanBackend::initVulkan() {
 	if (!createLogicalDevice())
 		return false;
 
+	std::cout << "Renderer mode: "
+	          << (rendererMode == RendererMode::Modern ? "Modern" : "Legacy") << "\n";
+
 	volkLoadDevice(device);
 
 	printAvailableGPUFeatures();

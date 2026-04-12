@@ -46,6 +46,8 @@ void Renderer::renderFrame() {
 
 	//render graph goes here will be implemented soon
 
+	recordDrawImagePass(cmd);
+	recordSwapchainPass(cmd, swapchainImageIndex);
 	
 
 	vkhelper::transition_image(cmd, drawImage.image, 0, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1);
@@ -88,6 +90,8 @@ void Renderer::renderFrame() {
 	//increase the number of frames drawn
 	vkBackend.advanceFrame();
 }
+
+
 
 void Renderer::createOffscreenTargets() {
 

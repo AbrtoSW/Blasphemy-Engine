@@ -1,5 +1,6 @@
 #include "renderer/renderer.h"
 #include "vulkan_backend/vk_backend.h"
+#include "pipelines/pipeline_manager.h"
 
 #include <iostream>
 #include <array>
@@ -76,7 +77,7 @@ void Renderer::createSwapchainRenderpass() {
 	VkAttachmentDescription colorAttachment = {};
 	colorAttachment.format = vkBackend.getSwapChainImageFormat(); // e.g., VK_FORMAT_B8G8R8A8_UNORM
 	colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD; // Preserve copied data
+	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR; // Preserve copied data
 	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 	colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 	colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -116,7 +117,7 @@ void Renderer::createSwapchainRenderpass() {
 
 }
 
-void Renderer::initDrawImageRenderpass(VkCommandBuffer cmd) {
+void Renderer::recordDrawImagePass(VkCommandBuffer cmd) {
 
 	if (vkBackend.getDevice() == VK_NULL_HANDLE) {
 		throw std::runtime_error("Cannot initialize render pass: invalid device");
@@ -147,13 +148,15 @@ void Renderer::initDrawImageRenderpass(VkCommandBuffer cmd) {
 	//start rendering 
 	vkCmdBeginRenderPass(cmd, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
+	recordSceneGeometry(cmd);
+
 	//render_pass_geometry(cmd, item, context);
 	
 	vkCmdEndRenderPass(cmd);
 
 }
 
-void Renderer::initSwapchainRenderpass(VkCommandBuffer cmd, uint32_t imageIndex) {
+void Renderer::recordSwapchainPass(VkCommandBuffer cmd, uint32_t imageIndex) {
 
 	if (vkBackend.getDevice() == VK_NULL_HANDLE) {
 		throw std::runtime_error("Cannot initialize render pass: invalid device");
@@ -180,6 +183,8 @@ void Renderer::initSwapchainRenderpass(VkCommandBuffer cmd, uint32_t imageIndex)
 	//start rendering 
 	vkCmdBeginRenderPass(cmd, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
+	recordPostProcessPass(cmd);
+
 	//render_imgui(cmd);
 
 	vkCmdEndRenderPass(cmd);
@@ -191,6 +196,50 @@ void Renderer::createRenderpasses() {
 	std::cout << "[Renderer] create renderpasses...\n" << std::flush;
 	createDrawImageRenderpass();
 	createSwapchainRenderpass();
+}
+
+void Renderer::recordSceneGeometry(VkCommandBuffer cmd) {
+
+	//future geometry will be rendered here
+
+	VkViewport viewport{};
+	viewport.x = 0; viewport.y = 0;
+	viewport.width = drawExtent.width;
+	viewport.height = drawExtent.height;
+	viewport.minDepth = 0.f; viewport.maxDepth = 1.f;
+	vkCmdSetViewport(cmd, 0, 1, &viewport);
+
+	VkRect2D scissor{};
+	scissor.offset = { 0,0 };
+	scissor.extent = { (uint32_t)viewport.width, (uint32_t)viewport.height };
+	vkCmdSetScissor(cmd, 0, 1, &scissor);
+
+
+
+}
+
+void Renderer::recordPostProcessPass(VkCommandBuffer cmd) {
+
+
+	VkViewport viewport{};
+	viewport.x = 0; viewport.y = 0;
+	viewport.width = vkBackend.getSwapchainExtent().width;
+	viewport.height = vkBackend.getSwapchainExtent().height;
+	viewport.minDepth = 0.f; viewport.maxDepth = 1.f;
+	vkCmdSetViewport(cmd, 0, 1, &viewport);
+
+	VkRect2D scissor{};
+	scissor.offset = { 0,0 };
+	scissor.extent = { (uint32_t)viewport.width, (uint32_t)viewport.height };
+	vkCmdSetScissor(cmd, 0, 1, &scissor);
+
+
+	VkPipeline p = pipelineManager.getPipeline(drawImagePipelineID);
+
+	vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, p);
+
+	vkCmdDraw(cmd, 3, 1, 0, 0);
+
 }
 
 
