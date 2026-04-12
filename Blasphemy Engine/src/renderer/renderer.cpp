@@ -11,6 +11,7 @@ bool Renderer::initRenderer() {
 	createRenderpasses();
 	createFramebuffers();
 	createDescriptors();
+	createPipelines();
 
 	return true;
 }

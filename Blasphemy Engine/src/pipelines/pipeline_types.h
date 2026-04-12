@@ -18,6 +18,9 @@ enum class PipelineType {
 };
 
 struct BaseGraphicsPipelineConfig {
+
+	VkPipelineLayoutCreateInfo layoutInfo;
+
 	VkPipelineInputAssemblyStateCreateInfo     inputAssembly{};
 	VkPipelineRasterizationStateCreateInfo     rasterizer{};
 	VkPipelineMultisampleStateCreateInfo       multisampling{};

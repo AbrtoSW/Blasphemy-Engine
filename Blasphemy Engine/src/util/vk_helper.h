@@ -24,6 +24,9 @@ namespace vkhelper {
 	VkSubmitInfo submit_info(VkCommandBuffer* cmd, VkSemaphore* signalSemaphore, VkSemaphore* waitSemaphore, VkPipelineStageFlags* waitDstStageMask);
 	
 	VkImageSubresourceRange image_subresource_range(VkImageAspectFlags aspectMask);
+
+	VkPipelineLayoutCreateInfo pipeline_layout_create_info();
+
 	//void transition_image(VkCommandBuffer cmd, VkImage image, VkImageLayout currentLayout, VkImageLayout newLayout);
 	
 	void transition_image(VkCommandBuffer cmd, VkImage image, VkImageAspectFlags srcAccess, VkImageAspectFlags dstAccess, VkImageLayout oldLayout, VkImageLayout newLayout, const VkImageSubresourceRange& range, VkImageAspectFlags srcStage, VkImageAspectFlags dstStage);
