@@ -65,10 +65,12 @@ void Renderer::drawImagePipeline() {
 	b.set_shaders(vertexShader, fragmentShader);
 	b.set_input_topology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 	b.set_polygon_mode(VK_POLYGON_MODE_FILL);
-	b.set_cull_mode(VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE);
+	// Swapchain pass is color-only (no depth attachment); depth test must be off for valid pipeline compatibility.
+	// Fullscreen triangle: disable culling so winding cannot drop the entire pass.
+	b.set_cull_mode(VK_CULL_MODE_NONE, VK_FRONT_FACE_COUNTER_CLOCKWISE);
 	b.set_multisampling_none();
 	b.disable_blending();
-	b.enable_depthtest(true, VK_COMPARE_OP_LESS);
+	b.disable_depthtest();
 	b.set_renderpass(swapchainRenderPass);
 
 	pipelineManager.drawImagePR.pipeline = b.build_pipeline(vkBackend.getDevice(), &pipelineManager.drawImagePR);

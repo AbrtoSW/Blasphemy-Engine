@@ -1,5 +1,6 @@
 #include "renderer/renderer.h"
 #include "vulkan_backend/vk_backend.h"
+#include "vulkan_backend/vk_frame_manager.h"
 #include <array>
 #include <iostream>
 
@@ -28,18 +29,20 @@ void Renderer::createSwapchainFramebuffer() {
 
 void Renderer::createDrawImageFramebuffer() {
 
-	std::array<VkImageView, 2> attachments = { drawImage.imageView, depthImage.imageView }; 
+	for (std::uint32_t i = 0; i < FRAME_OVERLAP; ++i) {
+		std::array<VkImageView, 2> attachments = { drawImages[i].imageView, depthImages[i].imageView };
 
-	VkFramebufferCreateInfo framebufferInfo = {};
-	framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-	framebufferInfo.renderPass = drawImageRenderPass; 
-	framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-	framebufferInfo.pAttachments = attachments.data();
-	framebufferInfo.width = drawImage.imageExtent.width; 
-	framebufferInfo.height = drawImage.imageExtent.height;
-	framebufferInfo.layers = 1; 
+		VkFramebufferCreateInfo framebufferInfo = {};
+		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebufferInfo.renderPass = drawImageRenderPass;
+		framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+		framebufferInfo.pAttachments = attachments.data();
+		framebufferInfo.width = drawImages[i].imageExtent.width;
+		framebufferInfo.height = drawImages[i].imageExtent.height;
+		framebufferInfo.layers = 1;
 
-	VK_CHECK(vkCreateFramebuffer(vkBackend.getDevice(), &framebufferInfo, nullptr, &drawImageFrameBuffer));
+		VK_CHECK(vkCreateFramebuffer(vkBackend.getDevice(), &framebufferInfo, nullptr, &drawImageFramebuffers[i]));
+	}
 }
 
 void Renderer::createFramebuffers() {
@@ -51,8 +54,10 @@ void Renderer::createFramebuffers() {
 
 
 void Renderer::enqueueFramebuffersForDeletion() {
-	
-	rendererDeletionQueue.pushFramebuffer(drawImageFrameBuffer);
+
+	for (std::uint32_t i = 0; i < FRAME_OVERLAP; ++i) {
+		rendererDeletionQueue.pushFramebuffer(drawImageFramebuffers[i]);
+	}
 
 	for (VkFramebuffer& fb : swapchainFrameBuffers) {
 		rendererDeletionQueue.pushFramebuffer(fb);

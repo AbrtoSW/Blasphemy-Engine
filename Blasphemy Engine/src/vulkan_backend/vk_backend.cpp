@@ -320,6 +320,10 @@ FrameData& VulkanBackend::getCurrentFrame() {
 	return frameManager.currentFrame();
 }
 
+std::uint32_t VulkanBackend::getCurrentFrameIndex() const {
+	return frameManager.getCurrentIndex();
+}
+
 void VulkanBackend::advanceFrame() {
 	frameManager.nextFrame();
 }

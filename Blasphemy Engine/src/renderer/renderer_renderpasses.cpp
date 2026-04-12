@@ -7,7 +7,7 @@
 
 void Renderer::createDrawImageRenderpass() {
 	VkAttachmentDescription colorAttachment = {};
-	colorAttachment.format = drawImage.imageFormat; // VK_FORMAT_R16G16B16A16_SFLOAT
+	colorAttachment.format = drawImages[0].imageFormat; // VK_FORMAT_R16G16B16A16_SFLOAT
 	colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
 	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR; // we load because we get an image from background pipelines, do clear if we dont render from background anymore
 	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -18,7 +18,7 @@ void Renderer::createDrawImageRenderpass() {
 
 
 	VkAttachmentDescription depthAttachment = {};
-	depthAttachment.format = depthImage.imageFormat;
+	depthAttachment.format = depthImages[0].imageFormat;
 	depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
 	depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -81,7 +81,7 @@ void Renderer::createSwapchainRenderpass() {
 	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 	colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 	colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
 
@@ -117,15 +117,15 @@ void Renderer::createSwapchainRenderpass() {
 
 }
 
-void Renderer::recordDrawImagePass(VkCommandBuffer cmd) {
+void Renderer::recordDrawImagePass(VkCommandBuffer cmd, uint32_t frameIndex) {
 
 	if (vkBackend.getDevice() == VK_NULL_HANDLE) {
 		throw std::runtime_error("Cannot initialize render pass: invalid device");
 	}
-	if (drawImage.imageFormat == VK_FORMAT_UNDEFINED) {
+	if (drawImages[frameIndex].imageFormat == VK_FORMAT_UNDEFINED) {
 		throw std::runtime_error("Cannot initialize render pass: invalid draw image format");
 	}
-	if (depthImage.imageFormat == VK_FORMAT_UNDEFINED) {
+	if (depthImages[frameIndex].imageFormat == VK_FORMAT_UNDEFINED) {
 		throw std::runtime_error("Cannot initialize render pass: invalid depth image format");
 	}
 
@@ -137,7 +137,7 @@ void Renderer::recordDrawImagePass(VkCommandBuffer cmd) {
 	VkRenderPassBeginInfo renderPassBeginInfo{};
 	renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 	renderPassBeginInfo.renderPass = drawImageRenderPass;
-	renderPassBeginInfo.framebuffer = drawImageFrameBuffer;
+	renderPassBeginInfo.framebuffer = drawImageFramebuffers[frameIndex];
 	renderPassBeginInfo.renderArea.extent = { drawExtent.width, drawExtent.height };
 	renderPassBeginInfo.renderArea.offset = { 0,0 };
 
@@ -156,7 +156,7 @@ void Renderer::recordDrawImagePass(VkCommandBuffer cmd) {
 
 }
 
-void Renderer::recordSwapchainPass(VkCommandBuffer cmd, uint32_t imageIndex) {
+void Renderer::recordSwapchainPass(VkCommandBuffer cmd, uint32_t imageIndex, uint32_t frameIndex) {
 
 	if (vkBackend.getDevice() == VK_NULL_HANDLE) {
 		throw std::runtime_error("Cannot initialize render pass: invalid device");
@@ -183,7 +183,7 @@ void Renderer::recordSwapchainPass(VkCommandBuffer cmd, uint32_t imageIndex) {
 	//start rendering 
 	vkCmdBeginRenderPass(cmd, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-	recordPostProcessPass(cmd);
+	recordPostProcessPass(cmd, frameIndex);
 
 	//render_imgui(cmd);
 
@@ -218,7 +218,7 @@ void Renderer::recordSceneGeometry(VkCommandBuffer cmd) {
 
 }
 
-void Renderer::recordPostProcessPass(VkCommandBuffer cmd) {
+void Renderer::recordPostProcessPass(VkCommandBuffer cmd, uint32_t frameIndex) {
 
 
 	VkViewport viewport{};
@@ -235,8 +235,10 @@ void Renderer::recordPostProcessPass(VkCommandBuffer cmd) {
 
 
 	VkPipeline p = pipelineManager.getPipeline(drawImagePipelineID);
+	VkPipelineLayout l = pipelineManager.getLayout(drawImagePipelineID);
 
 	vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, p);
+	vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, l, 0, 1, &drawImageDescriptorSets[frameIndex], 0, 0);
 
 	vkCmdDraw(cmd, 3, 1, 0, 0);
 

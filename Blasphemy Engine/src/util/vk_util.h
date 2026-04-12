@@ -36,6 +36,7 @@ public:
 
 	inline void pushRenderPass(const VkRenderPass& renderPass) { renderPasses.push_back(renderPass); }
 	inline void pushFramebuffer(const VkFramebuffer& framebuffer) { framebuffers.push_back(framebuffer); }
+	inline void pushSampler(const VkSampler& sampler) { samplers.push_back(sampler); }
 
 private:
 	std::vector<AllocatedBuffer> vmaFrameAllocatedBuffer;
@@ -44,5 +45,6 @@ private:
 	std::vector<AllocatedImage> allocatedImages;
 	std::vector<VkRenderPass> renderPasses;
 	std::vector<VkFramebuffer> framebuffers;
+	std::vector<VkSampler> samplers;
 };
 

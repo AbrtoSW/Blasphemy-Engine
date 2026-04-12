@@ -3,7 +3,9 @@
 #include "util/vk_util.h"
 #include "descriptors/descriptors.h"
 #include "pipelines/pipeline_types.h"
+#include "vulkan_backend/vk_frame_manager.h"
 
+#include <array>
 #include <vector>
 
 class VulkanBackend;
@@ -25,6 +27,9 @@ public:
 
 	void cleanup();
 
+	void createDescriptors();
+	void createFramebuffers();
+
 private:
 
 	VulkanBackend& vkBackend;
@@ -32,20 +37,21 @@ private:
 
 	VkExtent2D drawExtent{};
 
-	AllocatedImage drawImage{};
-	AllocatedImage depthImage{};
+	std::array<AllocatedImage, FRAME_OVERLAP> drawImages{};
+	std::array<AllocatedImage, FRAME_OVERLAP> depthImages{};
 
 	VkRenderPass drawImageRenderPass{};
 	VkRenderPass swapchainRenderPass{};
 
 	std::vector<VkFramebuffer> swapchainFrameBuffers{};
-	VkFramebuffer drawImageFrameBuffer{};
+	std::array<VkFramebuffer, FRAME_OVERLAP> drawImageFramebuffers{};
 
 	DeletionQueue rendererDeletionQueue{};
 
 	DescriptorAllocatorGrowable mainDescriptorAllocator{};
 
-	VkDescriptorSet drawImageDescriptorSet{};
+	VkSampler drawImageSampler{ VK_NULL_HANDLE };
+	std::array<VkDescriptorSet, FRAME_OVERLAP> drawImageDescriptorSets{};
 	VkDescriptorSetLayout drawImageDescriptorSetLayout{};
 
 	PipelineID drawImagePipelineID{};
@@ -53,8 +59,7 @@ private:
 	
 	void createRenderpasses();
 	void recordSceneGeometry(VkCommandBuffer cmd);
-	void recordPostProcessPass(VkCommandBuffer cmd);
-	void createFramebuffers();
+	void recordPostProcessPass(VkCommandBuffer cmd, uint32_t frameIndex);
 
 
 	void enqueueRenderPassessForDeletion();
@@ -65,9 +70,8 @@ private:
 	void createSwapchainFramebuffer();
 	void createDrawImageFramebuffer();
 
-	void recordDrawImagePass(VkCommandBuffer cmd);
-	void recordSwapchainPass(VkCommandBuffer cmd, uint32_t imageIndex);
-	void createDescriptors();
+	void recordDrawImagePass(VkCommandBuffer cmd, uint32_t frameIndex);
+	void recordSwapchainPass(VkCommandBuffer cmd, uint32_t imageIndex, uint32_t frameIndex);
 	void initDrawImageDescriptor();
 	void initFrameDescriptors();
 	void createPipelines();

@@ -49,6 +49,7 @@ public:
 
 	// Public API for frame pacing
 	FrameData& getCurrentFrame();
+	std::uint32_t getCurrentFrameIndex() const;
 	void advanceFrame();
 
 	// Getters for Renderer / engine

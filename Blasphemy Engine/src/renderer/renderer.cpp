@@ -33,8 +33,10 @@ void Renderer::renderFrame() {
 
 	VkSemaphore currentRenderSemaphore = vkBackend.getRenderSemaphore(swapchainImageIndex);
 
-	drawExtent.width = std::min(vkBackend.getSwapchainExtent().width, drawImage.imageExtent.width);
-	drawExtent.height = std::min(vkBackend.getSwapchainExtent().height, drawImage.imageExtent.height);
+	const std::uint32_t frameIndex = vkBackend.getCurrentFrameIndex();
+
+	drawExtent.width = std::min(vkBackend.getSwapchainExtent().width, drawImages[frameIndex].imageExtent.width);
+	drawExtent.height = std::min(vkBackend.getSwapchainExtent().height, drawImages[frameIndex].imageExtent.height);
 
 	VK_CHECK(vkResetFences(vkBackend.getDevice(), 1, &frame.renderFence));
 
@@ -46,17 +48,9 @@ void Renderer::renderFrame() {
 
 	//render graph goes here will be implemented soon
 
-	recordDrawImagePass(cmd);
-	recordSwapchainPass(cmd, swapchainImageIndex);
+	recordDrawImagePass(cmd, frameIndex);
+	recordSwapchainPass(cmd, swapchainImageIndex, frameIndex);
 	
-
-	vkhelper::transition_image(cmd, drawImage.image, 0, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1);
-
-	vkhelper::transition_image(cmd, drawImage.image, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1);
-	
-	vkhelper::transition_image(cmd, vkBackend.getSwapChainImage(swapchainImageIndex), 0, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1);
-
-	vkhelper::transition_image(cmd, vkBackend.getSwapChainImage(swapchainImageIndex), VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, 0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1);
 
 
 	VK_CHECK(vkEndCommandBuffer(cmd));
@@ -103,58 +97,62 @@ void Renderer::createOffscreenTargets() {
 	1
 	};
 
-	drawImage.imageFormat = VK_FORMAT_R16G16B16A16_SFLOAT;
-	drawImage.imageExtent = drawImageExtent;
-
 	VmaAllocationCreateInfo rimg_allocinfo = {};
 	rimg_allocinfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 	rimg_allocinfo.requiredFlags = VkMemoryPropertyFlags(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-	VkImageUsageFlags drawImageUsages{};
-	drawImageUsages |= VK_IMAGE_USAGE_STORAGE_BIT;
-	drawImageUsages |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-	drawImageUsages |= VK_IMAGE_USAGE_SAMPLED_BIT;
+	for (std::uint32_t i = 0; i < FRAME_OVERLAP; ++i) {
+		AllocatedImage& drawImg = drawImages[i];
+		AllocatedImage& depthImg = depthImages[i];
 
-	VkImageCreateInfo rimg_info = vkhelper::image_create_info(drawImage.imageFormat, drawImageUsages, drawImageExtent);
+		drawImg.imageFormat = VK_FORMAT_R16G16B16A16_SFLOAT;
+		drawImg.imageExtent = drawImageExtent;
 
-	std::cout << "[Renderer] vmaCreateImage drawImage...\n" << std::flush;
-	VK_CHECK(vmaCreateImage(vkBackend.getVmaAllocator(), &rimg_info, &rimg_allocinfo, &drawImage.image, &drawImage.allocation, nullptr));
+		VkImageUsageFlags drawImageUsages{};
+		drawImageUsages |= VK_IMAGE_USAGE_STORAGE_BIT;
+		drawImageUsages |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+		drawImageUsages |= VK_IMAGE_USAGE_SAMPLED_BIT;
 
-	VkImageViewCreateInfo rview_info = vkhelper::imageview_create_info(drawImage.imageFormat, drawImage.image, VK_IMAGE_ASPECT_COLOR_BIT);
+		VkImageCreateInfo rimg_info = vkhelper::image_create_info(drawImg.imageFormat, drawImageUsages, drawImageExtent);
 
-	std::cout << "[Renderer] vkCreateImageView drawImage...\n" << std::flush;
-	VK_CHECK(vkCreateImageView(vkBackend.getDevice(), &rview_info, nullptr, &drawImage.imageView));
-	rendererDeletionQueue.pushOffscreenImage(drawImage);
+		std::cout << "[Renderer] vmaCreateImage drawImage[" << i << "]...\n" << std::flush;
+		VK_CHECK(vmaCreateImage(vkBackend.getVmaAllocator(), &rimg_info, &rimg_allocinfo, &drawImg.image, &drawImg.allocation, nullptr));
 
+		VkImageViewCreateInfo rview_info = vkhelper::imageview_create_info(drawImg.imageFormat, drawImg.image, VK_IMAGE_ASPECT_COLOR_BIT);
 
-	depthImage.imageFormat = VK_FORMAT_D32_SFLOAT;
-	depthImage.imageExtent = drawImageExtent;
-	VkImageUsageFlags depthImageUsages{};
-	depthImageUsages |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+		std::cout << "[Renderer] vkCreateImageView drawImage[" << i << "]...\n" << std::flush;
+		VK_CHECK(vkCreateImageView(vkBackend.getDevice(), &rview_info, nullptr, &drawImg.imageView));
+		rendererDeletionQueue.pushOffscreenImage(drawImg);
 
-	VkImageCreateInfo dimg_info = vkhelper::image_create_info(depthImage.imageFormat, depthImageUsages, drawImageExtent);
-	std::cout << "[Renderer] vmaCreateImage depthImage...\n" << std::flush;
-	VK_CHECK(vmaCreateImage(vkBackend.getVmaAllocator(), &dimg_info, &rimg_allocinfo, &depthImage.image, &depthImage.allocation, nullptr));
+		depthImg.imageFormat = VK_FORMAT_D32_SFLOAT;
+		depthImg.imageExtent = drawImageExtent;
+		VkImageUsageFlags depthImageUsages{};
+		depthImageUsages |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 
-	VkImageViewCreateInfo dview_info = vkhelper::imageview_create_info(depthImage.imageFormat, depthImage.image, VK_IMAGE_ASPECT_DEPTH_BIT);
+		VkImageCreateInfo dimg_info = vkhelper::image_create_info(depthImg.imageFormat, depthImageUsages, drawImageExtent);
+		std::cout << "[Renderer] vmaCreateImage depthImage[" << i << "]...\n" << std::flush;
+		VK_CHECK(vmaCreateImage(vkBackend.getVmaAllocator(), &dimg_info, &rimg_allocinfo, &depthImg.image, &depthImg.allocation, nullptr));
 
+		VkImageViewCreateInfo dview_info = vkhelper::imageview_create_info(depthImg.imageFormat, depthImg.image, VK_IMAGE_ASPECT_DEPTH_BIT);
 
-	std::cout << "[Renderer] vkCreateImageView depthImage...\n" << std::flush;
-	VK_CHECK(vkCreateImageView(vkBackend.getDevice(), &dview_info, nullptr, &depthImage.imageView));
-	
-	//might change deletion here
-	rendererDeletionQueue.pushOffscreenImage(depthImage);
+		std::cout << "[Renderer] vkCreateImageView depthImage[" << i << "]...\n" << std::flush;
+		VK_CHECK(vkCreateImageView(vkBackend.getDevice(), &dview_info, nullptr, &depthImg.imageView));
+
+		rendererDeletionQueue.pushOffscreenImage(depthImg);
+	}
 
 	std::cout << "[Renderer] createOffscreenTargets end\n" << std::flush;
 }
 
 void Renderer::destroyOffscreenTargets() {
 	rendererDeletionQueue.flushResize(vkBackend.getDevice(), vkBackend.getVmaAllocator());
-	drawImage = {};
-	depthImage = {};
+	for (std::uint32_t i = 0; i < FRAME_OVERLAP; ++i) {
+		drawImages[i] = {};
+		depthImages[i] = {};
+		drawImageFramebuffers[i] = VK_NULL_HANDLE;
+	}
 	drawImageRenderPass = VK_NULL_HANDLE;
 	swapchainRenderPass = VK_NULL_HANDLE;
-	drawImageFrameBuffer = VK_NULL_HANDLE;
 	swapchainFrameBuffers.clear();
 }
 
@@ -162,6 +160,10 @@ void Renderer::cleanup() {
 
 	enqueueRenderPassessForDeletion();
 	enqueueFramebuffersForDeletion();
+	if (drawImageSampler != VK_NULL_HANDLE) {
+		rendererDeletionQueue.pushSampler(drawImageSampler);
+		drawImageSampler = VK_NULL_HANDLE;
+	}
 	destroyOffscreenTargets();
 	rendererDeletionQueue.flushMainResources(vkBackend.getDevice(), vkBackend.getVmaAllocator());
 }

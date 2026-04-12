@@ -49,17 +49,13 @@ void BlasphemyEngine::run() {
 		//    - submit + present
 
 		renderer.renderFrame();
-	
 	}
 
 	if (vkBackend.resizeRequested) {
 		resizeWindow();
 	}
-	
-	
+
 	std::cout << "Engine Exiting main loop.\n";
-
-
 }
 
 
@@ -84,10 +80,8 @@ void BlasphemyEngine::typeOut(const std::string& s, int delay) {
 
 void BlasphemyEngine::resizeWindow() {
 
-
 	vkDeviceWaitIdle(vkBackend.getDevice());
 
-	//renderer.resizeFlush / destroyFramebuffers check grotesk
 	renderer.destroyOffscreenTargets();
 
 	vkBackend.destroySwapchain();
@@ -107,10 +101,8 @@ void BlasphemyEngine::resizeWindow() {
 		return;
 	}
 	renderer.createOffscreenTargets();
-	// renderer.initFramebuffers();
-	// renderer.initDescriptors();
+	renderer.createFramebuffers();
+	renderer.createDescriptors();
 
 	vkBackend.resizeRequested = false;
-	
-
 }

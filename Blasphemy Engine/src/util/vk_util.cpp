@@ -64,6 +64,14 @@ void DeletionQueue::flushMainResources(VkDevice device, VmaAllocator& vmaAllocat
 	}
 	vmaAllocatedBuffer.clear();
 
+	for (auto& s : samplers) {
+		if (s != VK_NULL_HANDLE) {
+			vkDestroySampler(device, s, nullptr);
+			s = VK_NULL_HANDLE;
+		}
+	}
+	samplers.clear();
+
 }
 
 void DeletionQueue::flushResize(VkDevice device, VmaAllocator& vmaAllocator) {
